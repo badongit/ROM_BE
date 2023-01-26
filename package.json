@@ -18,11 +18,11 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/configs/database.config.ts",
+    "typeorm": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d dist/configs/database.config.js",
     "migrate:generate": "typeorm migration:generate -- -n",
-    "migrate:create": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:create",
-    "migrate:run": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:run -d src/configs/database.config.ts",
-    "migrate:revert": "typeorm migration:revert -d src/configs/database.config.ts"
+    "migrate:create": "typeorm migration:create",
+    "migrate:run": "typeorm migration:run -d dist/configs/database.config.js",
+    "migrate:revert": "typeorm migration:revert -d dist/configs/database.config.js"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -32,9 +32,9 @@
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.1.4",
     "@nestjs/typeorm": "^9.0.1",
-    "@types/dotenv": "^8.2.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "lodash": "^4.17.21",
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",

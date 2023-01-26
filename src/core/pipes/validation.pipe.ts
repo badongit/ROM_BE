@@ -1,12 +1,14 @@
 import {
   ArgumentMetadata,
-  HttpException,
-  HttpStatus,
+  BadRequestException,
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
+import { MessageEnum } from 'src/constants/enum/message.enum';
+import { ResponseCodeEnum } from 'src/constants/enum/response-code.enum';
+import { ApiError } from 'src/utils/api-error';
 
 @Injectable()
 export class CustomValidationPipe implements PipeTransform {
@@ -14,20 +16,27 @@ export class CustomValidationPipe implements PipeTransform {
     const { metatype } = metadata;
     const object = plainToClass(metatype, value);
     const errors = await validate(object);
+    console.log(errors);
 
     if (errors.length > 0) {
-      throw new HttpException(this.formatError(errors), HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(
+        new ApiError(ResponseCodeEnum.BAD_REQUEST, MessageEnum.BAD_REQUEST)
+          .withErrors(this.formatError(errors))
+          .toResponse(),
+      );
     }
     return object;
   }
 
   private formatError(errors: any[]) {
-    return errors
-      .map((error) => {
-        for (const key in error.constraints) {
-          return error.constraints[key];
-        }
-      })
-      .join(',');
+    const errObj: any = {};
+    errors.forEach((error) => {
+      for (const key in error.constraints) {
+        errObj[error.property] = error.constraints[key];
+        break;
+      }
+    });
+
+    return errObj;
   }
 }

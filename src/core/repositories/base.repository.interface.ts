@@ -8,15 +8,25 @@ import {
   SaveOptions,
   UpdateResult,
 } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 export interface IBaseRepository<Entity extends ObjectLiteral> {
-  findOne(options: FindOneOptions<Entity>): Promise<Entity | null>;
+  findById(id: number | string): Promise<Entity | null>;
 
-  find(options: FindManyOptions<Entity>): Promise<Entity[]>;
+  findOne(options?: FindOneOptions<Entity>): Promise<Entity | null>;
 
-  save(entity: Entity, options: SaveOptions): Promise<Entity>;
+  find(options?: FindManyOptions<Entity>): Promise<Entity[]>;
 
-  saveMany(entities: Entity[], options: SaveOptions): Promise<Entity[]>;
+  findAndCount(options?: FindManyOptions<Entity>): Promise<[Entity[], number]>;
+
+  save(entity: Entity, options?: SaveOptions): Promise<Entity>;
+
+  saveMany(entities: Entity[], options?: SaveOptions): Promise<Entity[]>;
+
+  update(
+    criteria: string | string[] | number | number[] | FindOptionsWhere<Entity>,
+    partialEntity: QueryDeepPartialEntity<Entity>,
+  ): Promise<UpdateResult>;
 
   delete(
     criteria: number | number[] | FindOptionsWhere<Entity>,
@@ -30,15 +40,15 @@ export interface IBaseRepository<Entity extends ObjectLiteral> {
     criteria: number | number[] | FindOptionsWhere<Entity>,
   ): Promise<UpdateResult>;
 
-  remove(entity: Entity, options: RemoveOptions): Promise<Entity>;
+  remove(entity: Entity, options?: RemoveOptions): Promise<Entity>;
 
-  removeMany(entities: Entity[], options: RemoveOptions): Promise<Entity[]>;
+  removeMany(entities: Entity[], options?: RemoveOptions): Promise<Entity[]>;
 
-  softRemove(entity: Entity, options: SaveOptions): Promise<Entity>;
+  softRemove(entity: Entity, options?: SaveOptions): Promise<Entity>;
 
-  softRemoveMany(entities: Entity[], options: SaveOptions): Promise<Entity[]>;
+  softRemoveMany(entities: Entity[], options?: SaveOptions): Promise<Entity[]>;
 
-  recover(entity: Entity, options: SaveOptions): Promise<Entity>;
+  recover(entity: Entity, options?: SaveOptions): Promise<Entity>;
 
-  recoverMany(entities: Entity[], options: SaveOptions): Promise<Entity[]>;
+  recoverMany(entities: Entity[], options?: SaveOptions): Promise<Entity[]>;
 }

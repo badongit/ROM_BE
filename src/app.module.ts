@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { FloorModule } from './components/floor/floor.module';
+import { TableModule } from './components/table/table.module';
 import AppDataSource from './configs/database.config';
 
 @Module({
@@ -11,6 +12,7 @@ import AppDataSource from './configs/database.config';
     TypeOrmModule.forRoot(AppDataSource.options),
     ConfigModule.forRoot({ isGlobal: true }),
     FloorModule,
+    TableModule,
   ],
   controllers: [AppController],
   providers: [AppService],

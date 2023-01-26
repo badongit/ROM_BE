@@ -4,6 +4,7 @@ export interface ResponsePayload<T> {
   statusCode: ResponseCodeEnum;
   message?: string;
   data?: T | PaginationData<T>;
+  errors?: ErrorResponse;
 }
 
 export interface PaginationData<T> {
@@ -14,4 +15,8 @@ export interface PaginationData<T> {
 export interface Meta {
   page: number;
   total: number;
+}
+
+export interface ErrorResponse {
+  [property: string]: string;
 }

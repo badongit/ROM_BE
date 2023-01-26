@@ -9,6 +9,7 @@ import {
   SaveOptions,
   UpdateResult,
 } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { IBaseRepository } from './base.repository.interface';
 
 export class BaseRepository<Entity extends ObjectLiteral>
@@ -20,12 +21,20 @@ export class BaseRepository<Entity extends ObjectLiteral>
     this.repository = repository;
   }
 
-  findOne(options: FindOneOptions<Entity>): Promise<Entity> {
+  findById(id: number | string): Promise<Entity | null> {
+    return this.repository.findOneById(id);
+  }
+
+  findOne(options?: FindOneOptions<Entity>): Promise<Entity | null> {
     return this.repository.findOne(options);
   }
 
-  find(options: FindManyOptions<Entity>): Promise<Entity[]> {
+  find(options?: FindManyOptions<Entity>): Promise<Entity[]> {
     return this.repository.find(options);
+  }
+
+  findAndCount(options?: FindManyOptions<Entity>): Promise<[Entity[], number]> {
+    return this.repository.findAndCount(options);
   }
 
   save(entity: Entity, options?: SaveOptions): Promise<Entity> {
@@ -34,6 +43,13 @@ export class BaseRepository<Entity extends ObjectLiteral>
 
   saveMany(entities: Entity[], options?: SaveOptions): Promise<Entity[]> {
     return this.repository.save(entities, options);
+  }
+
+  update(
+    criteria: string | string[] | number | number[] | FindOptionsWhere<Entity>,
+    partialEntity: QueryDeepPartialEntity<Entity>,
+  ): Promise<UpdateResult> {
+    return this.repository.update(criteria, partialEntity);
   }
 
   delete(

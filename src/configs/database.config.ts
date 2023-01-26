@@ -12,9 +12,9 @@ const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: false,
   logging: process.env.NODE_ENV === 'development',
-  entities: ['src/entities/*'],
+  entities: ['dist/components/*/entities/*.entity.js'],
   subscribers: [],
-  migrations: ['src/migrations/*'],
+  migrations: ['dist/migrations/*'],
   migrationsRun: false,
   namingStrategy: new SnakeNamingStrategy(),
 });
