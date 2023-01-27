@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TableStatusEnum } from '@src/components/table/constants/status.enum';
 import { CreateTableBodyDto } from '@src/components/table/dto/request/create-table.body.dto';
 import { ListTableQueryDto } from '@src/components/table/dto/request/list-table.query.dto';
 import { UpdateTableBodyDto } from '@src/components/table/dto/request/update-table.body.dto';
@@ -28,6 +29,7 @@ export class TableRepository
     entity.code = code;
     entity.max_people = max_people;
     entity.description = description;
+    entity.status = TableStatusEnum.EMPTY;
     entity.floor_id = floor_id;
 
     return entity;
@@ -50,7 +52,7 @@ export class TableRepository
     const filterObj: any = {};
 
     if (isEmpty(sort)) {
-      sortObj.createdAt = SortEnum.DESC;
+      sortObj.created_at = SortEnum.DESC;
     } else {
       sort.forEach((item) => {
         switch (item.column) {

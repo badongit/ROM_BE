@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -8,9 +9,15 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
 import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
+import { ChangeStatusTableBodyDto } from './dto/request/change-status-table.body.dto';
 import { CreateTableBodyDto } from './dto/request/create-table.body.dto';
 import { ListTableQueryDto } from './dto/request/list-table.query.dto';
 import { UpdateTableBodyDto } from './dto/request/update-table.body.dto';
@@ -18,7 +25,9 @@ import { DetailTableResponseDto } from './dto/response/detail-table.response.dto
 import { TableResponseDto } from './dto/response/table.response.dto';
 import { ITableService } from './interfaces/table.service.interface';
 
-@Controller('table')
+@ApiBearerAuth()
+@ApiTags('Tables')
+@Controller('tables')
 export class TableController {
   constructor(
     @Inject('ITableService')
@@ -46,15 +55,27 @@ export class TableController {
     return this.tableService.detail(params);
   }
 
+  @Patch('/:id/status')
+  @ApiOperation({ summary: 'Update status table' })
+  @ApiResponse({ status: ResponseCodeEnum.OK })
+  changeStatus(
+    @Param() params: IdParamsDto,
+    @Body() body: ChangeStatusTableBodyDto,
+  ) {
+    return this.tableService.changeStatus({ ...params, ...body });
+  }
+
   @Patch(':id')
-  @ApiOperation({ summary: 'Detail table' })
+  @ApiOperation({ summary: 'Update table' })
   @ApiResponse({ status: ResponseCodeEnum.OK })
   update(@Param() params: IdParamsDto, @Body() body: UpdateTableBodyDto) {
     return this.tableService.update({ ...params, ...body });
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.tableService.remove(+id);
-  // }
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete table' })
+  @ApiResponse({ status: ResponseCodeEnum.OK })
+  remove(@Param() params: IdParamsDto) {
+    return this.tableService.delete(params);
+  }
 }

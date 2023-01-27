@@ -2,19 +2,23 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
 export class TableResponseDto {
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @Expose()
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'T01-B1' })
   @Expose()
   code: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
+  @Expose()
+  status: number;
+
+  @ApiProperty({ example: 5 })
   @Expose()
   max_people: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @Expose()
   floor_id: number;
 }

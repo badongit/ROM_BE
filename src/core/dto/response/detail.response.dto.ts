@@ -7,13 +7,9 @@ export class DetailResponseDto {
 
   @ApiProperty({ example: '2023-01-21T07:48:18.262Z' })
   @Expose()
-  createdAt: Date;
+  created_at: Date;
 
   @ApiProperty({ example: '2023-01-21T07:48:18.262Z' })
   @Expose()
-  updatedAt: Date;
-
-  @ApiProperty({ example: null })
-  @Expose()
-  deletedAt: Date;
+  updated_at: Date;
 }

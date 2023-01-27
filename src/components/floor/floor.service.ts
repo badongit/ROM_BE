@@ -84,18 +84,19 @@ export class FloorService implements IFloorService {
       ).toResponse();
     }
 
-    const existedFloor = await this.floorRepository.findOne({
+    const existedCode = await this.floorRepository.findOne({
       where: { code: request.code, id: Not(Equal(request.id)) },
     });
 
-    if (existedFloor) {
+    if (existedCode) {
       return new ApiError(
         ResponseCodeEnum.BAD_REQUEST,
         MessageEnum.CODE_EXISTED,
       ).toResponse();
     }
 
-    await this.floorRepository.save(floor);
+    const entity = this.floorRepository.updateEntity(floor, request);
+    await this.floorRepository.save(entity);
 
     return new ResponseBuilder().build();
   }
@@ -110,7 +111,7 @@ export class FloorService implements IFloorService {
       ).toResponse();
     }
 
-    await this.floorRepository.softRemove(floor);
+    await this.floorRepository.softDelete(request.id);
 
     return new ResponseBuilder().build();
   }

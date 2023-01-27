@@ -6,8 +6,11 @@ import { ResponsePayload } from '@src/core/interfaces/response-payload';
 import { ApiError } from '@src/utils/api-error';
 import { ResponseBuilder } from '@src/utils/response-builder';
 import { plainToClass } from 'class-transformer';
+import e from 'express';
 import { Equal, Not } from 'typeorm';
 import { IFloorRepository } from '../floor/interfaces/floor.repository.interface';
+import { TableStatusEnum } from './constants/status.enum';
+import { ChangeStatusTableBodyDto } from './dto/request/change-status-table.body.dto';
 import { CreateTableBodyDto } from './dto/request/create-table.body.dto';
 import { ListTableQueryDto } from './dto/request/list-table.query.dto';
 import { UpdateTableBodyDto } from './dto/request/update-table.body.dto';
@@ -89,8 +92,45 @@ export class TableService implements ITableService {
     return new ResponseBuilder().build();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} table`;
+  async changeStatus(
+    request: IdParamsDto & ChangeStatusTableBodyDto,
+  ): Promise<ResponsePayload<any>> {
+    const existed = await this.tableRepository.findById(request.id);
+
+    if (!existed) {
+      return new ApiError(
+        ResponseCodeEnum.NOT_FOUND,
+        MessageEnum.TABLE_NOT_FOUND,
+      ).toResponse();
+    }
+
+    const responseError = this.validateChangeStatus(
+      existed.status,
+      request.status,
+    );
+
+    if (responseError) {
+      return responseError;
+    }
+
+    existed.status = request.status;
+    await this.tableRepository.save(existed);
+
+    return new ResponseBuilder().build();
+  }
+
+  async delete(request: IdParamsDto): Promise<ResponsePayload<any>> {
+    const existed = await this.tableRepository.findById(request.id);
+
+    if (!existed) {
+      return new ApiError(
+        ResponseCodeEnum.NOT_FOUND,
+        MessageEnum.TABLE_NOT_FOUND,
+      ).toResponse();
+    }
+
+    await this.tableRepository.softDelete(request.id);
+    return new ResponseBuilder().build();
   }
 
   async validateBeforeSave(request: any): Promise<ResponsePayload<any> | null> {
@@ -137,5 +177,32 @@ export class TableService implements ITableService {
     }
 
     return null;
+  }
+
+  validateChangeStatus(
+    oldStatus: TableStatusEnum,
+    newStatus: TableStatusEnum,
+  ): ResponsePayload<any> | null {
+    let isValid = true;
+    switch (newStatus) {
+      case TableStatusEnum.RESERVED:
+      case TableStatusEnum.OFF:
+        if (oldStatus !== TableStatusEnum.EMPTY) isValid = false;
+        break;
+      case TableStatusEnum.SERVING:
+        if (
+          oldStatus !== TableStatusEnum.EMPTY &&
+          oldStatus !== TableStatusEnum.RESERVED
+        )
+          isValid = false;
+        break;
+    }
+
+    if (isValid) return null;
+
+    return new ApiError(
+      ResponseCodeEnum.BAD_REQUEST,
+      MessageEnum.STATUS_INVALID,
+    ).toResponse();
   }
 }

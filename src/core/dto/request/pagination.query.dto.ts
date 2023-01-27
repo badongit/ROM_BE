@@ -28,7 +28,7 @@ export class PaginationQueryDto {
 
   @ApiPropertyOptional({ example: '1' })
   @Allow()
-  @Transform((value) =>
+  @Transform(({ value }) =>
     !Number(value) || Number(value) <= 0 ? 1 : Number(value),
   )
   page: number;
@@ -43,9 +43,10 @@ export class PaginationQueryDto {
       return value;
     }
 
-    if (value instanceof String) {
+    if (typeof value === 'string') {
       if (value) value = value.replace(/\\/g, '');
-      const sortArr: Sort[] = value.split(',').reduce((pre, val) => {
+      const sortArr: Sort[] = [];
+      value.split(',').forEach((val) => {
         if (val.trim() !== '') {
           const sort = new Sort();
           switch (val[0]) {
@@ -58,9 +59,9 @@ export class PaginationQueryDto {
           }
           sort.column = val.replace(/\+|\-/g, '');
 
-          pre.push(sort);
+          sortArr.push(sort);
         }
-      }, []);
+      });
 
       return sortArr;
     }
@@ -85,6 +86,6 @@ export class PaginationQueryDto {
     const page =
       !Number(this.page) || Number(this.page) <= 0 ? 1 : Number(this.page);
 
-    return page * this.take;
+    return (page - 1) * this.take;
   }
 }

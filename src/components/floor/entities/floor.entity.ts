@@ -1,6 +1,6 @@
 import { Table } from '@src/components/table/entities/table.entity';
 import { BaseEntity } from 'src/core/entities/base.entity';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany } from 'typeorm';
 
 @Entity({ name: 'floors' })
 export class Floor extends BaseEntity {
@@ -10,6 +10,9 @@ export class Floor extends BaseEntity {
   @Column()
   code: string;
 
-  @OneToMany(() => Table, (table) => table.floor)
+  @OneToMany(() => Table, (table) => table.floor, {
+    cascade: ['soft-remove', 'remove'],
+  })
+  @JoinColumn({ name: 'id', referencedColumnName: 'floor_id' })
   tables: Table[];
 }

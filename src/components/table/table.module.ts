@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Table } from './entities/table.entity';
 import { TableRepository } from '@src/repositories/table.repository';
 import { FloorRepository } from '@src/repositories/floor.repository';
+import { Floor } from '../floor/entities/floor.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Table])],
+  imports: [TypeOrmModule.forFeature([Table, Floor])],
   controllers: [TableController],
   providers: [
     {
@@ -27,6 +28,10 @@ import { FloorRepository } from '@src/repositories/floor.repository';
     {
       provide: 'ITableRepository',
       useClass: TableRepository,
+    },
+    {
+      provide: 'ITableService',
+      useClass: TableService,
     },
   ],
 })

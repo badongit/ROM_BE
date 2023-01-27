@@ -3,27 +3,27 @@ import { DetailResponseDto } from '@src/core/dto/response/detail.response.dto';
 import { Expose } from 'class-transformer';
 
 export class DetailTableResponseDto extends DetailResponseDto {
-  @ApiProperty()
+  @ApiProperty({ example: 'T01-B1' })
   @Expose()
   code: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @Expose()
   status: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 5 })
   @Expose()
   max_people: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: '' })
   @Expose()
   description: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '' })
   @Expose()
   note: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @Expose()
   floor_id: number;
 }
