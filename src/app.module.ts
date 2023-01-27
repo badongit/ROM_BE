@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { FloorModule } from './components/floor/floor.module';
 import { TableModule } from './components/table/table.module';
+import { CategoryModule } from './components/category/category.module';
 import AppDataSource from './configs/database.config';
 
 @Module({
@@ -13,6 +14,7 @@ import AppDataSource from './configs/database.config';
     ConfigModule.forRoot({ isGlobal: true }),
     FloorModule,
     TableModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

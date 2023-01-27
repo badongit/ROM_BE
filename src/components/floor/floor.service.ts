@@ -24,6 +24,7 @@ export class FloorService implements IFloorService {
   async create(request: CreateFloorBodyDto): Promise<ResponsePayload<any>> {
     const existedFloor = await this.floorRepository.findOne({
       where: { code: request.code },
+      withDeleted: true,
     });
 
     if (existedFloor) {
@@ -86,6 +87,7 @@ export class FloorService implements IFloorService {
 
     const existedCode = await this.floorRepository.findOne({
       where: { code: request.code, id: Not(Equal(request.id)) },
+      withDeleted: true,
     });
 
     if (existedCode) {

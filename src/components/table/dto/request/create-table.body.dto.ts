@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsNotEmpty,
   IsInt,
@@ -12,6 +13,7 @@ import TABLE_SCHEMA from '../../constants/schema';
 export class CreateTableBodyDto {
   @ApiProperty({ description: "table's code", example: 'T01-B1' })
   @MaxLength(TABLE_SCHEMA.CODE.LENGTH)
+  @Transform(({ value }) => value.trim().toUpperCase())
   @IsString()
   @IsNotEmpty()
   code: string;
@@ -24,6 +26,7 @@ export class CreateTableBodyDto {
 
   @ApiPropertyOptional({ description: 'description', example: '' })
   @MaxLength(TABLE_SCHEMA.DESCRIPTION.LENGTH)
+  @Transform(({ value }) => value.trim())
   @IsString()
   @IsOptional()
   description: string;

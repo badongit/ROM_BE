@@ -40,12 +40,12 @@ export class FloorRepository
     const sortObj: any = {};
 
     if (isEmpty(sort)) {
-      sortObj.createdAt = SortEnum.DESC;
+      sortObj.created_at = SortEnum.DESC;
     } else {
       sort.forEach((item) => {
         switch (item.column) {
           case 'name':
-          case 'createdAt':
+          case 'created_at':
             sortObj[item.column] = item.order;
             break;
         }

@@ -49,7 +49,7 @@ export class TableRepository
   list(request: ListTableQueryDto): Promise<[Table[], number]> {
     const { sort, take, skip, floor_id, status } = request;
     const sortObj: any = {};
-    const filterObj: any = {};
+    const conditions: any = {};
 
     if (isEmpty(sort)) {
       sortObj.created_at = SortEnum.DESC;
@@ -59,6 +59,7 @@ export class TableRepository
           case 'code':
           case 'max_people':
           case 'floor_id':
+          case 'created_at':
             sortObj[item.column] = item.order;
             break;
         }
@@ -66,15 +67,15 @@ export class TableRepository
     }
 
     if (floor_id) {
-      filterObj.floor_id = floor_id;
+      conditions.floor_id = floor_id;
     }
 
     if (isDefined(status)) {
-      filterObj.status = status;
+      conditions.status = status;
     }
 
     return this.tableRepository.findAndCount({
-      where: filterObj,
+      where: conditions,
       order: sortObj,
       take: take,
       skip: skip,

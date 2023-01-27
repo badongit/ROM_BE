@@ -6,7 +6,6 @@ import { ResponsePayload } from '@src/core/interfaces/response-payload';
 import { ApiError } from '@src/utils/api-error';
 import { ResponseBuilder } from '@src/utils/response-builder';
 import { plainToClass } from 'class-transformer';
-import e from 'express';
 import { Equal, Not } from 'typeorm';
 import { IFloorRepository } from '../floor/interfaces/floor.repository.interface';
 import { TableStatusEnum } from './constants/status.enum';
@@ -166,13 +165,16 @@ export class TableService implements ITableService {
       existedCodeConditions.code = code;
       const existedCode = await this.tableRepository.findOne({
         where: existedCodeConditions,
+        withDeleted: true,
       });
 
       if (existedCode) {
         return new ApiError(
           ResponseCodeEnum.BAD_REQUEST,
           MessageEnum.CODE_EXISTED,
-        ).toResponse();
+        )
+          .withErrors({ code: MessageEnum.CODE_EXISTED })
+          .toResponse();
       }
     }
 

@@ -22,6 +22,7 @@ export class Sort {
 }
 export class PaginationQueryDto {
   @ApiPropertyOptional({ example: 'tang' })
+  @Transform(({ value }) => value.trim())
   @IsString()
   @IsOptional()
   keyword: string;
