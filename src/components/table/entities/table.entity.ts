@@ -23,7 +23,7 @@ export class Table extends BaseEntity {
   @Column()
   floor_id: number;
 
-  @ManyToOne(() => Floor, (floor) => floor.tables, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Floor, (floor) => floor.tables)
   @JoinColumn({ name: 'floor_id', referencedColumnName: 'id' })
   floor: Floor;
 }

@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { FloorModule } from './components/floor/floor.module';
 import { TableModule } from './components/table/table.module';
 import { CategoryModule } from './components/category/category.module';
+import { DishModule } from './components/dish/dish.module';
 import AppDataSource from './configs/database.config';
 
 @Module({
@@ -15,6 +16,7 @@ import AppDataSource from './configs/database.config';
     FloorModule,
     TableModule,
     CategoryModule,
+    DishModule,
   ],
   controllers: [AppController],
   providers: [AppService],
