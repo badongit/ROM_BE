@@ -9,6 +9,8 @@ import { CategoryModule } from './components/category/category.module';
 import { DishModule } from './components/dish/dish.module';
 import { StoreModule } from './components/store/store.module';
 import { RoleModule } from './components/role/role.module';
+import { CustomerModule } from './components/customer/customer.module';
+import { EmployeeModule } from './employee/employee.module';
 import AppDataSource from './configs/database.config';
 
 @Module({
@@ -21,6 +23,8 @@ import AppDataSource from './configs/database.config';
     DishModule,
     StoreModule,
     RoleModule,
+    CustomerModule,
+    EmployeeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
