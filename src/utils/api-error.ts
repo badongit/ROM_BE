@@ -5,7 +5,7 @@ import { ErrorResponse } from '../core/interfaces/response-payload';
 export class ApiError extends Error {
   private readonly _errorCode: ResponseCodeEnum;
   private readonly _message: string;
-  errors: any = {};
+  errors: ErrorResponse = {};
 
   constructor(errorCode: ResponseCodeEnum, message: string) {
     super(message);
@@ -23,7 +23,10 @@ export class ApiError extends Error {
   }
 
   withErrors(errors: ErrorResponse) {
-    this.errors = errors;
+    this.errors = {
+      ...this.errors,
+      ...errors,
+    };
     return this;
   }
 

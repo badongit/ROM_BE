@@ -6,6 +6,7 @@ export enum MessageEnum {
   CATEGORY_NOT_FOUND = 'Dữ liệu Danh mục không tồn tại',
   DISH_NOT_FOUND = 'Dữ liệu món ăn không tồn tại',
   CUSTOMER_NOT_FOUND = 'Dữ liệu Khách hàng không tồn tại',
+  EMPLOYEE_NOT_FOUND = 'Dữ liệu Nhân viên không tồn tại',
   CODE_EXISTED = 'Mã đã tồn tại',
   NAME_EXISTED = 'Tên đã tồn tại',
   PHONE_NUMBER_EXISTED = 'Số điện thoại đã tồn tại',

@@ -18,11 +18,18 @@ export class Sort {
   @ApiProperty()
   @IsEnum(SortEnum)
   @IsNotEmpty()
-  order: string;
+  order: 'DESC' | 'ASC';
 }
 export class PaginationQueryDto {
   @ApiPropertyOptional({ example: 'tang' })
-  @Transform(({ value }) => value.trim())
+  @Transform(({ value }) =>
+    value
+      .trim()
+      .toLowerCase()
+      .replace(/[?%\\_]/gi, function (x) {
+        return '\\' + x;
+      }),
+  )
   @IsString()
   @IsOptional()
   keyword: string;
