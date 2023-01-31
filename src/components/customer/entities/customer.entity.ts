@@ -1,5 +1,6 @@
+import { Order } from '@src/components/order/entities/order.entity';
 import { BaseEntity } from '@src/core/entities/base.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany } from 'typeorm';
 
 @Entity({ name: 'customers' })
 export class Customer extends BaseEntity {
@@ -11,4 +12,8 @@ export class Customer extends BaseEntity {
 
   @Column()
   point: number;
+
+  @OneToMany(() => Order, (order) => order.customer)
+  @JoinColumn({ name: 'id', referencedColumnName: 'customer_id' })
+  orders: Order[];
 }

@@ -1,6 +1,7 @@
+import { Order } from '@src/components/order/entities/order.entity';
 import { Role } from '@src/components/role/entities/role.entity';
 import { BaseEntity } from '@src/core/entities/base.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { EmployeeStatusEnum } from '../constants/status.enum';
 
 @Entity({ name: 'employees' })
@@ -38,4 +39,8 @@ export class Employee extends BaseEntity {
     referencedColumnName: 'id',
   })
   role: Role;
+
+  @OneToMany(() => Order, (order) => order.cashier)
+  @JoinColumn({ name: 'id', referencedColumnName: 'cashier_id' })
+  orders: Order[];
 }

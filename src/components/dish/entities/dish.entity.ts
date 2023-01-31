@@ -1,6 +1,7 @@
 import { Category } from '@src/components/category/entities/category.entity';
+import { OrderDetail } from '@src/components/order/entities/order-details.entity';
 import { BaseEntity } from '@src/core/entities/base.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity({ name: 'dishes' })
 export class Dish extends BaseEntity {
@@ -25,4 +26,8 @@ export class Dish extends BaseEntity {
   @ManyToOne(() => Category, (category) => category.dishes)
   @JoinColumn({ name: 'category_id', referencedColumnName: 'id' })
   category: Category;
+
+  @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.dish)
+  @JoinColumn({ name: 'id', referencedColumnName: 'dish_id' })
+  order_details: OrderDetail[];
 }

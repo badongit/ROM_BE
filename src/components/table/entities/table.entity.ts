@@ -1,6 +1,7 @@
 import { Floor } from '@src/components/floor/entities/floor.entity';
+import { Order } from '@src/components/order/entities/order.entity';
 import { BaseEntity } from '@src/core/entities/base.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { TableStatusEnum } from '../constants/status.enum';
 
 @Entity({ name: 'tables' })
@@ -26,4 +27,8 @@ export class Table extends BaseEntity {
   @ManyToOne(() => Floor, (floor) => floor.tables)
   @JoinColumn({ name: 'floor_id', referencedColumnName: 'id' })
   floor: Floor;
+
+  @OneToMany(() => Order, (order) => order.table)
+  @JoinColumn({ name: 'id', referencedColumnName: 'table_id' })
+  orders: Order[];
 }
