@@ -12,6 +12,7 @@ import { RoleModule } from './components/role/role.module';
 import { CustomerModule } from './components/customer/customer.module';
 import { EmployeeModule } from './components/employee/employee.module';
 import { OrderModule } from './components/order/order.module';
+import { AuthenticationModule } from './components/authentication/authentication.module';
 import AppDataSource from './configs/database.config';
 
 @Module({
@@ -27,6 +28,7 @@ import AppDataSource from './configs/database.config';
     CustomerModule,
     EmployeeModule,
     OrderModule,
+    AuthenticationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
