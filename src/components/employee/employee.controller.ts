@@ -16,6 +16,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
+import { RoleEnum } from '@src/constants/enum/role.enum';
+import { Roles } from '@src/core/decorators/roles.decorator';
 import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
 import { ChangeStatusEmployeeBodyDto } from './dto/request/change-employee.body.dto';
 import { CreateEmployeeBodyDto } from './dto/request/create-employee.body.dto';
@@ -36,6 +38,7 @@ export class EmployeeController {
     private readonly employeeService: IEmployeeService,
   ) {}
 
+  @Roles(RoleEnum.ADMIN)
   @Post()
   @ApiOperation({ summary: 'Create' })
   @ApiResponse({ status: ResponseCodeEnum.CREATED })

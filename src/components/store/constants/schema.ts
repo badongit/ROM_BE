@@ -3,8 +3,7 @@ const STORE_SCHEMA = {
     LENGTH: 127,
   },
   PHONE_NUMBER: {
-    LENGTH: 10,
-    REGEX: /^[0]\d+$/,
+    REGEX: /^[0]\d{9}$/,
   },
   ADDRESS: {
     LENGTH: 255,

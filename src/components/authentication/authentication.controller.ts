@@ -1,34 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { AuthenticationService } from './authentication.service';
-import { CreateAuthenticationDto } from './dto/create-authentication.dto';
-import { UpdateAuthenticationDto } from './dto/update-authentication.dto';
+import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
+import { LoginRequestDto } from './dto/request/login.request.dto';
+import { LoginResponseDto } from './dto/response/login.response.dto';
+import { IAuthenticationService } from './interfaces/authentication.service.interface';
 
-@Controller('authentication')
+@ApiTags('Authentication')
+@Controller('auth')
 export class AuthenticationController {
-  constructor(private readonly authenticationService: AuthenticationService) {}
+  constructor(
+    @Inject('IAuthenticationService')
+    private readonly authenticationService: IAuthenticationService,
+  ) {}
 
   @Post()
-  create(@Body() createAuthenticationDto: CreateAuthenticationDto) {
-    return this.authenticationService.create(createAuthenticationDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.authenticationService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authenticationService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthenticationDto: UpdateAuthenticationDto) {
-    return this.authenticationService.update(+id, updateAuthenticationDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authenticationService.remove(+id);
+  @ApiOperation({ summary: 'Login' })
+  @ApiResponse({ status: ResponseCodeEnum.OK, type: LoginResponseDto })
+  login(@Body() body: LoginRequestDto) {
+    return this.authenticationService.login(body);
   }
 }

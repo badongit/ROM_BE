@@ -1,4 +1,5 @@
 import { Employee } from '@src/components/employee/entities/employee.entity';
+import { RoleEnum } from '@src/constants/enum/role.enum';
 import {
   Column,
   Entity,
@@ -16,7 +17,7 @@ export class Role {
   name: string;
 
   @Column()
-  code: string;
+  code: RoleEnum;
 
   @OneToMany(() => Employee, (employee) => employee.role)
   @JoinColumn({

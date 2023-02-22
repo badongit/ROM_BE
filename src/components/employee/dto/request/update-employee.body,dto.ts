@@ -21,7 +21,6 @@ export class UpdateEmployeeBodyDto {
 
   @ApiPropertyOptional({ example: '0123456789' })
   @Matches(EMPLOYEE_SCHEMA.PHONE_NUMBER.REGEX)
-  @MaxLength(EMPLOYEE_SCHEMA.PHONE_NUMBER.LENGTH)
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsOptional()

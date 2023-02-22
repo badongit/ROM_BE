@@ -1,9 +1,17 @@
 import { Order } from '@src/components/order/entities/order.entity';
 import { Role } from '@src/components/role/entities/role.entity';
 import { BaseEntity } from '@src/core/entities/base.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { EmployeeStatusEnum } from '../constants/status.enum';
-
+import * as bcryptJs from 'bcryptjs';
 @Entity({ name: 'employees' })
 export class Employee extends BaseEntity {
   @Column()
@@ -43,4 +51,15 @@ export class Employee extends BaseEntity {
   @OneToMany(() => Order, (order) => order.cashier)
   @JoinColumn({ name: 'id', referencedColumnName: 'cashier_id' })
   orders: Order[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  hashPassword() {
+    const saltOrRounds = 10;
+    this.password = bcryptJs.hashSync(this.password, saltOrRounds);
+  }
+
+  validatePassword(password: string): boolean {
+    return bcryptJs.compareSync(password, this.password);
+  }
 }

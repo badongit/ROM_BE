@@ -11,4 +11,6 @@ export enum MessageEnum {
   NAME_EXISTED = 'Tên đã tồn tại',
   PHONE_NUMBER_EXISTED = 'Số điện thoại đã tồn tại',
   STATUS_INVALID = 'Trạng thái không hợp lệ',
+  UNAUTHORIZED = 'Unauthorized',
+  PHONE_NUMBER_OR_PASSWORD_WRONG = 'Số điện thoại hoặc mật khẩu không đúng',
 }

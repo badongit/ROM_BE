@@ -16,7 +16,6 @@ export class UpdateStoreBodyDto {
 
   @ApiPropertyOptional({ example: '0123456789' })
   @Matches(STORE_SCHEMA.PHONE_NUMBER.REGEX)
-  @MaxLength(STORE_SCHEMA.PHONE_NUMBER.LENGTH)
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsOptional()

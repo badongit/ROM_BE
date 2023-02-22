@@ -3,4 +3,5 @@ export enum RoleEnum {
   COOK = 'COOK',
   CASHIER = 'CASHIER',
   MANAGER = 'MANAGER',
+  ADMIN = 'ADMIN',
 }

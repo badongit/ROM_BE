@@ -19,7 +19,6 @@ export class CreateCustomerBodyDto {
 
   @ApiProperty({ example: '0123456789' })
   @Matches(CUSTOMER_SCHEMA.PHONE_NUMBER.REGEX)
-  @MaxLength(CUSTOMER_SCHEMA.PHONE_NUMBER.LENGTH)
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsNotEmpty()

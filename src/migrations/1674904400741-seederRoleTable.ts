@@ -1,4 +1,5 @@
 import { Role } from '@src/components/role/entities/role.entity';
+import { RoleEnum } from '@src/constants/enum/role.enum';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class seederRoleTable1674904400741 implements MigrationInterface {
@@ -10,19 +11,23 @@ export class seederRoleTable1674904400741 implements MigrationInterface {
       .values([
         {
           name: 'Phục vụ',
-          code: 'WAITER',
+          code: RoleEnum.WAITER,
         },
         {
           name: 'Phụ bếp',
-          code: 'COOK',
+          code: RoleEnum.COOK,
         },
         {
           name: 'Thu ngân',
-          code: 'CASHIER',
+          code: RoleEnum.CASHIER,
         },
         {
           name: 'Quản lý',
-          code: 'MANAGER',
+          code: RoleEnum.MANAGER,
+        },
+        {
+          name: 'Admin',
+          code: RoleEnum.ADMIN,
         },
       ])
       .execute();
