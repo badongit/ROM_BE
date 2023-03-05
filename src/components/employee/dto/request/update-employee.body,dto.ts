@@ -24,7 +24,7 @@ export class UpdateEmployeeBodyDto {
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsOptional()
-  phone_number: string;
+  phoneNumber: string;
 
   @ApiPropertyOptional({ example: '12345678' })
   @MaxLength(EMPLOYEE_SCHEMA.PASSWORD.MAX_LENGTH)

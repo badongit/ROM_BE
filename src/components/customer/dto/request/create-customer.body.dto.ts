@@ -22,5 +22,5 @@ export class CreateCustomerBodyDto {
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsNotEmpty()
-  phone_number: string;
+  phoneNumber: string;
 }

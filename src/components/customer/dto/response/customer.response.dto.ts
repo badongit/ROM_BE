@@ -12,7 +12,7 @@ export class CustomerResponseDto {
 
   @ApiProperty({ example: '0123456789' })
   @Expose()
-  phone_number: string;
+  phoneNumber: string;
 
   @ApiProperty({ example: 0 })
   @Expose()

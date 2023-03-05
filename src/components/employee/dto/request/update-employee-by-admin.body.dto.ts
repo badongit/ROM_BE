@@ -7,7 +7,7 @@ export class UpdateEmployeeByAdminBodyDto extends UpdateEmployeeByManagerBodyDto
   @ApiPropertyOptional({ example: 1 })
   @IsInt()
   @IsOptional()
-  role_id: number;
+  roleId: number;
 
   @ApiPropertyOptional({ example: 3000000 })
   @Min(EMPLOYEE_SCHEMA.SALARY.MIN)

@@ -1,5 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JWT_CONSTANT } from '@src/constants/common';
 import { MessageEnum } from '@src/constants/enum/message.enum';
@@ -8,10 +7,12 @@ import { RoleEnum } from '@src/constants/enum/role.enum';
 import { ResponsePayload } from '@src/core/interfaces/response-payload';
 import { ApiError } from '@src/utils/api-error';
 import { ResponseBuilder } from '@src/utils/response-builder';
-import { Request } from 'express';
-import { DetailEmployeeResponseDto } from '../employee/dto/response/detail-employee.response.dto';
+import { Cache } from 'cache-manager';
 import { IEmployeeRepository } from '../employee/interfaces/employee.repository.interface';
+import { DecodeRefreshTokenDto } from './dto/decode-refresh-token.dto';
+import { GetTokenBodyDto } from './dto/request/get-token.body.dto';
 import { LoginRequestDto } from './dto/request/login.request.dto';
+import { GetTokenResponseDto } from './dto/response/get-token.response.dto';
 import { LoginResponseDto } from './dto/response/login.response.dto';
 import { IAuthenticationService } from './interfaces/authentication.service.interface';
 
@@ -20,75 +21,64 @@ export class AuthenticationService implements IAuthenticationService {
   constructor(
     private readonly jwtService: JwtService,
 
-    @Inject(REQUEST)
-    private readonly request: Request,
-
     @Inject('IEmployeeRepository')
     private readonly employeeRepository: IEmployeeRepository,
+
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   async login(
     request: LoginRequestDto,
   ): Promise<ResponsePayload<LoginResponseDto | any>> {
-    const { phone_number, password } = request;
-    const employee = await this.employeeRepository.findOne({
-      where: { phone_number: phone_number },
-      relations: {
-        role: true,
-      },
+    const { phoneNumber, password } = request;
+    const user = await this.employeeRepository.findOne({
+      where: { phoneNumber: phoneNumber },
     });
 
-    if (!employee || !employee.validatePassword(password)) {
+    if (!user || !user.validatePassword(password)) {
       return new ApiError(
         ResponseCodeEnum.BAD_REQUEST,
         MessageEnum.PHONE_NUMBER_OR_PASSWORD_WRONG,
       ).toResponse();
     }
 
-    const access_token = this._createToken(employee.id, employee.role.code);
-    const refresh_token = this._createRefreshToken(employee.id);
+    const accessToken = this._createToken(user.id, user.role.code);
+    const refreshToken = this._createRefreshToken(user.id);
 
-    return new ResponseBuilder({ access_token, refresh_token }).build();
+    await this.cacheManager.set(user.id.toString(), refreshToken);
+
+    return new ResponseBuilder({ accessToken, refreshToken }).build();
   }
 
-  async validateToken(): Promise<
-    ResponsePayload<DetailEmployeeResponseDto | any>
-  > {
-    const token = this.request.headers['authorization']?.split(' ')?.[1];
+  async getToken(
+    request: GetTokenBodyDto,
+  ): Promise<ResponsePayload<GetTokenResponseDto | any>> {
+    const { refreshToken } = request;
 
-    try {
-      this.jwtService.verify(token);
-      const decoded: any = this.jwtService.decode(token);
-      const employee = await this.employeeRepository.findOne({
-        where: { id: decoded.id },
-        relations: { role: true },
-      });
+    const decoded = this._decodeRefreshToken(refreshToken);
 
-      if (!employee) {
-        return new ApiError(
-          ResponseCodeEnum.UNAUTHORIZED,
-          MessageEnum.UNAUTHORIZED,
-        ).toResponse();
-      }
+    const check = await this.cacheManager.get(decoded.id.toString());
 
-      return new ResponseBuilder(employee).build();
-    } catch (error) {
-      if (error.constructor.name === 'TokenExpiredError') {
-        return new ApiError(
-          ResponseCodeEnum.FORBIDDEN,
-          error.message,
-        ).toResponse();
-      }
+    const user = await this.employeeRepository.findOne({
+      where: { id: decoded.id },
+    });
+
+    if (!check || !user) {
       return new ApiError(
-        ResponseCodeEnum.UNAUTHORIZED,
-        error.message,
+        ResponseCodeEnum.BAD_REQUEST,
+        MessageEnum.UNAUTHORIZED,
       ).toResponse();
     }
+
+    const token = this._createToken(user.id, user.role?.code);
+
+    return new ResponseBuilder({ accessToken: token }).build();
   }
 
   _createToken(id: number, role: RoleEnum): string {
-    const expiresIn = JWT_CONSTANT.JWT_ACCESS_TOKEN_EXPIRES_IN;
-    const secret = JWT_CONSTANT.JWT_ACCESS_TOKEN_SECRET;
+    const expiresIn = JWT_CONSTANT.ACCESS_TOKEN_EXPIRES_IN;
+    const secret = JWT_CONSTANT.ACCESS_TOKEN_SECRET;
 
     const token = this.jwtService.sign({ id, role }, { expiresIn, secret });
 
@@ -96,11 +86,17 @@ export class AuthenticationService implements IAuthenticationService {
   }
 
   _createRefreshToken(id: number): string {
-    const expiresIn = JWT_CONSTANT.JWT_REFRESH_TOKEN_EXPIRES_IN;
-    const secret = JWT_CONSTANT.JWT_REFRESH_TOKEN_SECRET;
+    const expiresIn = JWT_CONSTANT.REFRESH_TOKEN_EXPIRES_IN;
+    const secret = JWT_CONSTANT.REFRESH_TOKEN_SECRET;
 
     const token = this.jwtService.sign({ id }, { expiresIn, secret });
 
     return token;
+  }
+
+  _decodeRefreshToken(token: string): DecodeRefreshTokenDto {
+    const secret = JWT_CONSTANT.REFRESH_TOKEN_SECRET;
+
+    return this.jwtService.verify(token, { secret });
   }
 }

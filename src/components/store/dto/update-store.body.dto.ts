@@ -19,7 +19,7 @@ export class UpdateStoreBodyDto {
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsOptional()
-  phone_number: string;
+  phoneNumber: string;
 
   @ApiPropertyOptional({
     example: '2 Hải Triều, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh ',

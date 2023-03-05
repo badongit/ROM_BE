@@ -15,7 +15,7 @@ export class UpdateTableBodyDto {
   @Min(TABLE_SCHEMA.MAX_PEOPLE.MIN)
   @IsInt()
   @IsOptional()
-  max_people: number;
+  maxPeople: number;
 
   @ApiPropertyOptional({ description: 'description', example: '' })
   @MaxLength(TABLE_SCHEMA.DESCRIPTION.LENGTH)
@@ -34,5 +34,5 @@ export class UpdateTableBodyDto {
   @ApiPropertyOptional({ description: 'floor id', example: 1 })
   @IsInt()
   @IsOptional()
-  floor_id: number;
+  floorId: number;
 }

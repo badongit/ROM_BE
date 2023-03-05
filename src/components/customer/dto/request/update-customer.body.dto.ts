@@ -16,5 +16,5 @@ export class UpdateCustomerBodyDto {
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsOptional()
-  phone_number: string;
+  phoneNumber: string;
 }

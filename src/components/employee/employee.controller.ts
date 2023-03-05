@@ -46,6 +46,7 @@ export class EmployeeController {
     return this.employeeService.create(body);
   }
 
+  @Roles(RoleEnum.ADMIN, RoleEnum.MANAGER)
   @Get()
   @ApiOperation({ summary: 'List' })
   @ApiResponse({ status: ResponseCodeEnum.OK, type: EmployeeResponseDto })
@@ -84,6 +85,7 @@ export class EmployeeController {
     return this.employeeService.changeStatus({ ...params, ...body });
   }
 
+  @Roles(RoleEnum.MANAGER)
   @Patch(':id/manager')
   @ApiOperation({ summary: 'Update by manager' })
   @ApiResponse({ status: ResponseCodeEnum.OK })
@@ -94,6 +96,7 @@ export class EmployeeController {
     return this.employeeService.updateByManager({ ...params, ...body });
   }
 
+  @Roles(RoleEnum.ADMIN)
   @Patch(':id/admin')
   @ApiOperation({ summary: 'Update by admin' })
   @ApiResponse({ status: ResponseCodeEnum.OK })

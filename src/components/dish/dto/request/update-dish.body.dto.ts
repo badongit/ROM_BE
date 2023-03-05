@@ -42,5 +42,5 @@ export class UpdateDishBodyDto {
   @ApiPropertyOptional({ description: 'category id', example: 1 })
   @IsInt()
   @IsOptional()
-  category_id: number;
+  categoryId: number;
 }

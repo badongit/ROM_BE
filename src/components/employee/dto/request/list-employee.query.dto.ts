@@ -8,7 +8,7 @@ export class ListEmployeeQueryDto extends PaginationQueryDto {
   @ApiPropertyOptional({ example: 1 })
   @IsInt()
   @IsOptional()
-  role_id: number;
+  roleId: number;
 
   @ApiPropertyOptional({ example: 0 })
   @IsEnum(EmployeeStatusEnum)
@@ -19,20 +19,20 @@ export class ListEmployeeQueryDto extends PaginationQueryDto {
   @ApiPropertyOptional({ example: '2023-01-21T07:48:18.262Z' })
   @IsDateString()
   @IsOptional()
-  date_join_from: Date;
+  dateJoinFrom: Date;
 
   @ApiPropertyOptional({ example: '2023-01-21T07:48:18.262Z' })
   @IsDateString()
   @IsOptional()
-  date_join_to: Date;
+  dateJoinTo: Date;
 
   @ApiPropertyOptional({ example: '2023-01-21T07:48:18.262Z' })
   @IsDateString()
   @IsOptional()
-  date_out_from: Date;
+  dateOutFrom: Date;
 
   @ApiPropertyOptional({ example: '2023-01-21T07:48:18.262Z' })
   @IsDateString()
   @IsOptional()
-  date_out_to: Date;
+  dateOutTo: Date;
 }

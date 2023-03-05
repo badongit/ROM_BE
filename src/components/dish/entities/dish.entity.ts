@@ -21,7 +21,7 @@ export class Dish extends BaseEntity {
   description: string;
 
   @Column()
-  category_id: number;
+  categoryId: number;
 
   @ManyToOne(() => Category, (category) => category.dishes)
   @JoinColumn({ name: 'category_id', referencedColumnName: 'id' })
@@ -29,5 +29,5 @@ export class Dish extends BaseEntity {
 
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.dish)
   @JoinColumn({ name: 'id', referencedColumnName: 'dish_id' })
-  order_details: OrderDetail[];
+  orderDetails: OrderDetail[];
 }

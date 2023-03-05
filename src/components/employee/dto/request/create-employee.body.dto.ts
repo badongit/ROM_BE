@@ -33,7 +33,7 @@ export class CreateEmployeeBodyDto {
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsNotEmpty()
-  phone_number: string;
+  phoneNumber: string;
 
   @ApiProperty({ example: '12345678' })
   @MaxLength(EMPLOYEE_SCHEMA.PASSWORD.MAX_LENGTH)
@@ -46,7 +46,7 @@ export class CreateEmployeeBodyDto {
   @ApiPropertyOptional({ example: '2023-01-21T07:48:18.262Z' })
   @IsDateString()
   @IsOptional()
-  date_join: Date;
+  dateJoin: Date;
 
   @ApiPropertyOptional({ example: 3000000 })
   @Min(EMPLOYEE_SCHEMA.SALARY.MIN)
@@ -57,5 +57,5 @@ export class CreateEmployeeBodyDto {
   @ApiProperty({ example: 1 })
   @IsInt()
   @IsNotEmpty()
-  role_id: number;
+  roleId: number;
 }

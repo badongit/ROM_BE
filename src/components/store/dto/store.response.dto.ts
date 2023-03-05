@@ -12,7 +12,7 @@ export class StoreResponseDto {
 
   @ApiProperty({ example: '0123456789' })
   @Expose()
-  phone_number: string;
+  phoneNumber: string;
 
   @ApiProperty({
     example: '2 Hải Triều, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh ',

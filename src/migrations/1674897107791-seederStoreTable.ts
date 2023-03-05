@@ -11,7 +11,7 @@ export class seederStoreTable1674897107791 implements MigrationInterface {
         {
           name: 'Hailidao',
           image: 'images',
-          phone_number: '0123456789',
+          phoneNumber: '0123456789',
           address: 'thành phố Bình Dương',
           description: 'Quán lẩu bình thường ở Bình Dương',
         },

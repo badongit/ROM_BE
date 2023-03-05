@@ -26,25 +26,25 @@ export class EmployeeRepository
     super(employeeRepository);
   }
   createEntity(request: CreateEmployeeBodyDto): Employee {
-    const { name, code, phone_number, password, date_join, salary, role_id } =
+    const { name, code, phoneNumber, password, dateJoin, salary, roleId } =
       request;
     const entity = new Employee();
     entity.name = name;
     entity.code = code;
-    entity.phone_number = phone_number;
+    entity.phoneNumber = phoneNumber;
     entity.password = password;
     entity.status = EmployeeStatusEnum.WORKING;
-    entity.date_join = date_join || new Date();
+    entity.dateJoin = dateJoin || new Date();
     entity.salary = salary || 0;
-    entity.role_id = role_id;
+    entity.roleId = roleId;
 
     return entity;
   }
   updateEntity(entity: Employee, request: UpdateEmployeeBodyDto): Employee {
-    const { name, phone_number, password } = request;
+    const { name, phoneNumber, password } = request;
 
     entity.name = name;
-    entity.phone_number = phone_number;
+    entity.phoneNumber = phoneNumber;
     entity.password = password;
 
     return entity;
@@ -58,12 +58,12 @@ export class EmployeeRepository
       take,
       skip,
       keyword,
-      role_id,
+      roleId,
       status,
-      date_join_from,
-      date_join_to,
-      date_out_from,
-      date_out_to,
+      dateJoinFrom,
+      dateJoinTo,
+      dateOutFrom,
+      dateOutTo,
     } = request;
 
     const query = this.employeeRepository
@@ -72,22 +72,22 @@ export class EmployeeRepository
         'e.id AS id',
         'e.name AS name',
         'e.code AS code',
-        'e.phone_number AS phone_number',
+        'e.phoneNumber AS phoneNumber',
         'e.status AS status',
-        'e.date_join AS date_join',
-        'e.date_out AS date_out',
-        'e.role_id AS role_id',
+        'e.dateJoin AS dateJoin',
+        'e.dateOut AS dateOut',
+        'e.roleId AS roleId',
         'e.salary AS salary',
         `JSON_BUILD_OBJECT('id', r.id, 'name', r.name, 'code', r.code) AS role`,
       ])
-      .innerJoin(Role, 'r', 'r.id = e.role_id');
+      .innerJoin(Role, 'r', 'r.id = e.roleId');
 
     if (!isEmpty(keyword)) {
       query.andWhere(
         `(
         LOWER(UNACCENT(e.name)) ILIKE UNACCENT(:keyword) ESCAPE '\\'
         OR LOWER(UNACCENT(e.code)) ILIKE UNACCENT(:keyword) ESCAPE '\\'
-        OR LOWER(UNACCENT(e.phone_number)) ILIKE UNACCENT(:keyword) ESCAPE '\\'
+        OR LOWER(UNACCENT(e.phoneNumber)) ILIKE UNACCENT(:keyword) ESCAPE '\\'
       )`,
         {
           keyword: `%${keyword}%`,
@@ -95,40 +95,40 @@ export class EmployeeRepository
       );
     }
 
-    if (role_id) {
-      query.andWhere('e.role_id = :role_id', { role_id });
+    if (roleId) {
+      query.andWhere('e.roleId = :roleId', { roleId });
     }
 
     if (isDefined(status)) {
       query.andWhere('e.status = :status', { status });
     }
 
-    if (date_join_from) {
-      query.andWhere('e.date_join::DATE >= :date_join_from::DATE', {
-        date_join_from,
+    if (dateJoinFrom) {
+      query.andWhere('e.dateJoin::DATE >= :dateJoinFrom::DATE', {
+        dateJoinFrom,
       });
     }
 
-    if (date_join_to) {
-      query.andWhere('e.date_join::DATE <= :date_join_to::DATE', {
-        date_join_to,
+    if (dateJoinTo) {
+      query.andWhere('e.dateJoin::DATE <= :dateJoinTo::DATE', {
+        dateJoinTo,
       });
     }
 
-    if (date_out_from) {
-      query.andWhere('e.date_out::DATE >= :date_out_from::DATE', {
-        date_out_from,
+    if (dateOutFrom) {
+      query.andWhere('e.dateOut::DATE >= :dateOutFrom::DATE', {
+        dateOutFrom,
       });
     }
 
-    if (date_out_to) {
-      query.andWhere('e.date_out::DATE <= :date_out_to::DATE', {
-        date_out_to,
+    if (dateOutTo) {
+      query.andWhere('e.dateOut::DATE <= :dateOutTo::DATE', {
+        dateOutTo,
       });
     }
 
     if (isEmpty(sort)) {
-      query.orderBy('created_at', SortEnum.DESC);
+      query.orderBy('createdAt', SortEnum.DESC);
     } else {
       sort.forEach((item) => {
         switch (item.column) {
@@ -136,8 +136,8 @@ export class EmployeeRepository
           case 'code':
           case 'status':
           case 'price':
-          case 'category_id':
-          case 'created_at':
+          case 'categoryId':
+          case 'createdAt':
             query.addOrderBy(item.column, item.order);
             break;
         }
@@ -156,11 +156,11 @@ export class EmployeeRepository
   ): Employee {
     switch (request.status) {
       case EmployeeStatusEnum.WORKING:
-        entity.date_join = new Date();
-        entity.date_out = null;
+        entity.dateJoin = new Date();
+        entity.dateOut = null;
         break;
       case EmployeeStatusEnum.LEAVE:
-        entity.date_out = new Date();
+        entity.dateOut = new Date();
         break;
     }
     entity.status = request.status;
@@ -171,11 +171,11 @@ export class EmployeeRepository
     entity: Employee,
     request: UpdateEmployeeByManagerBodyDto,
   ): Employee {
-    const { code, date_join, date_out } = request;
+    const { code, dateJoin, dateOut } = request;
     const newEntity = this.updateEntity(entity, request);
     newEntity.code = code;
-    newEntity.date_join = date_join;
-    newEntity.date_out = date_out;
+    newEntity.dateJoin = dateJoin;
+    newEntity.dateOut = dateOut;
 
     return entity;
   }
@@ -184,9 +184,9 @@ export class EmployeeRepository
     entity: Employee,
     request: UpdateEmployeeByAdminBodyDto,
   ): Employee {
-    const { role_id, salary } = request;
+    const { roleId, salary } = request;
     const newEntity = this.updateEntityByManager(entity, request);
-    newEntity.role_id = role_id;
+    newEntity.roleId = roleId;
     newEntity.salary = salary;
 
     return newEntity;

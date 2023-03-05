@@ -74,7 +74,6 @@ export class EmployeeService implements IEmployeeService {
   ): Promise<ResponsePayload<DetailEmployeeResponseDto | any>> {
     const existed = await this.employeeRepository.findOne({
       where: { id: request.id },
-      relations: { role: true },
     });
 
     if (!existed) {
@@ -167,7 +166,7 @@ export class EmployeeService implements IEmployeeService {
 
   private async validateBeforeSave(
     request: any,
-  ): Promise<[ResponsePayload<any> | null, Employee | null]> {
+  ): Promise<[ResponsePayload<any>, Employee]> {
     let entity: Employee = null;
     let error: ApiError = new ApiError(
       ResponseCodeEnum.BAD_REQUEST,
@@ -200,14 +199,14 @@ export class EmployeeService implements IEmployeeService {
       }
     }
 
-    if (request.phone_number) {
+    if (request.phoneNumber) {
       const existedPhone = await this.employeeRepository.findOne({
-        where: { phone_number: request.phone_number, ...conditions },
+        where: { phoneNumber: request.phoneNumber, ...conditions },
         withDeleted: true,
       });
 
       if (existedPhone) {
-        error.withErrors({ phone_number: MessageEnum.PHONE_NUMBER_EXISTED });
+        error.withErrors({ phoneNumber: MessageEnum.PHONE_NUMBER_EXISTED });
       }
     }
 

@@ -1,35 +1,18 @@
-import {
-  ExecutionContext,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthenticationService } from '@src/components/authentication/authentication.service';
-import { IAuthenticationService } from '@src/components/authentication/interfaces/authentication.service.interface';
+import { MessageEnum } from '@src/constants/enum/message.enum';
 import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
+import { ApiError } from '@src/utils/api-error';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class JwtGuard extends AuthGuard('jwt') {
-  constructor(
-    private reflector: Reflector,
-
-    @Inject('IAuthenticationService')
-    private readonly authenticationService: AuthenticationService,
-  ) {
+  constructor(private reflector: Reflector) {
     super();
-    console.log('--------------------', this.reflector);
   }
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log(this.reflector);
-    console.log(
-      '🚀 ~ file: jwt.guard.ts:22 ~ JwtGuard ~ classJwtGuardextendsAuthGuard ~ authenticationService',
-      this.authenticationService,
-    );
-
+  canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -39,21 +22,18 @@ export class JwtGuard extends AuthGuard('jwt') {
       return true;
     }
 
-    const req = await context.switchToHttp().getRequest();
-
-    const res = await this.authenticationService.validateToken();
-
-    if (res.statusCode === ResponseCodeEnum.OK) {
-      req.employee = res.data;
-      return true;
-    }
-
-    return false;
+    return super.canActivate(context);
   }
 
   handleRequest(err: any, user: any) {
     if (err || !user) {
-      throw err || new UnauthorizedException();
+      throw (
+        err ||
+        new ApiError(
+          ResponseCodeEnum.UNAUTHORIZED,
+          MessageEnum.UNAUTHORIZED,
+        ).toResponse()
+      );
     }
 
     return user;

@@ -24,50 +24,50 @@ export class TableRepository
     super(tableRepository);
   }
   createEntity(request: CreateTableBodyDto): Table {
-    const { code, max_people, description, floor_id } = request;
+    const { code, maxPeople, description, floorId } = request;
     const entity = new Table();
     entity.code = code;
-    entity.max_people = max_people;
+    entity.maxPeople = maxPeople;
     entity.description = description;
     entity.status = TableStatusEnum.EMPTY;
-    entity.floor_id = floor_id;
+    entity.floorId = floorId;
 
     return entity;
   }
 
   updateEntity(entity: Table, request: UpdateTableBodyDto): Table {
-    const { code, max_people, description, note, floor_id } = request;
+    const { code, maxPeople, description, note, floorId } = request;
     entity.code = code;
-    entity.max_people = max_people;
+    entity.maxPeople = maxPeople;
     entity.description = description;
     entity.note = note;
-    entity.floor_id = floor_id;
+    entity.floorId = floorId;
 
     return entity;
   }
 
   list(request: ListTableQueryDto): Promise<[Table[], number]> {
-    const { sort, take, skip, floor_id, status } = request;
+    const { sort, take, skip, floorId, status } = request;
     const sortObj: any = {};
     const conditions: any = {};
 
     if (isEmpty(sort)) {
-      sortObj.created_at = SortEnum.DESC;
+      sortObj.createdAt = SortEnum.DESC;
     } else {
       sort.forEach((item) => {
         switch (item.column) {
           case 'code':
-          case 'max_people':
-          case 'floor_id':
-          case 'created_at':
+          case 'maxPeople':
+          case 'floorId':
+          case 'createdAt':
             sortObj[item.column] = item.order;
             break;
         }
       });
     }
 
-    if (floor_id) {
-      conditions.floor_id = floor_id;
+    if (floorId) {
+      conditions.floorId = floorId;
     }
 
     if (isDefined(status)) {

@@ -8,7 +8,7 @@ export class Customer extends BaseEntity {
   name: string;
 
   @Column()
-  phone_number: string;
+  phoneNumber: string;
 
   @Column()
   point: number;

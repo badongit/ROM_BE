@@ -24,7 +24,7 @@ export class CustomerService implements ICustomerService {
 
   async create(request: CreateCustomerBodyDto): Promise<ResponsePayload<any>> {
     const existed = await this.customerRepository.findOne({
-      where: { phone_number: request.phone_number },
+      where: { phoneNumber: request.phoneNumber },
     });
 
     if (existed) {
@@ -32,7 +32,7 @@ export class CustomerService implements ICustomerService {
         ResponseCodeEnum.BAD_REQUEST,
         MessageEnum.PHONE_NUMBER_EXISTED,
       )
-        .withErrors({ phone_number: MessageEnum.PHONE_NUMBER_EXISTED })
+        .withErrors({ phoneNumber: MessageEnum.PHONE_NUMBER_EXISTED })
         .toResponse();
     }
 
@@ -53,9 +53,9 @@ export class CustomerService implements ICustomerService {
       ).toResponse();
     }
 
-    if (request.phone_number) {
+    if (request.phoneNumber) {
       const existedPhone = await this.customerRepository.findOne({
-        where: { phone_number: request.phone_number },
+        where: { phoneNumber: request.phoneNumber },
       });
 
       if (existedPhone) {
@@ -63,7 +63,7 @@ export class CustomerService implements ICustomerService {
           ResponseCodeEnum.BAD_REQUEST,
           MessageEnum.PHONE_NUMBER_EXISTED,
         )
-          .withErrors({ phone_number: MessageEnum.PHONE_NUMBER_EXISTED })
+          .withErrors({ phoneNumber: MessageEnum.PHONE_NUMBER_EXISTED })
           .toResponse();
       }
     }

@@ -27,9 +27,7 @@ export class DishService implements IDishService {
   ) {}
 
   async create(request: CreateDishBodyDto): Promise<ResponsePayload<any>> {
-    const category = await this.categoryRepository.findById(
-      request.category_id,
-    );
+    const category = await this.categoryRepository.findById(request.categoryId);
 
     if (!category) {
       return new ApiError(
@@ -56,9 +54,9 @@ export class DishService implements IDishService {
       ).toResponse();
     }
 
-    if (request.category_id) {
+    if (request.categoryId) {
       const category = await this.categoryRepository.findById(
-        request.category_id,
+        request.categoryId,
       );
 
       if (!category) {
@@ -107,6 +105,7 @@ export class DishService implements IDishService {
     });
     return new ResponseBuilder(dataReturn).build();
   }
+
   async delete(request: IdParamsDto): Promise<ResponsePayload<any>> {
     const existed = await this.dishRepository.findById(request.id);
 

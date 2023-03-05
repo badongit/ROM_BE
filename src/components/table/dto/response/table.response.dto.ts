@@ -16,9 +16,9 @@ export class TableResponseDto {
 
   @ApiProperty({ example: 5 })
   @Expose()
-  max_people: number;
+  maxPeople: number;
 
   @ApiProperty({ example: 1 })
   @Expose()
-  floor_id: number;
+  floorId: number;
 }

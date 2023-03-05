@@ -21,7 +21,7 @@ export class Employee extends BaseEntity {
   code: string;
 
   @Column()
-  phone_number: string;
+  phoneNumber: string;
 
   @Column()
   status: EmployeeStatusEnum;
@@ -30,18 +30,18 @@ export class Employee extends BaseEntity {
   password: string;
 
   @Column()
-  date_join: Date;
+  dateJoin: Date;
 
   @Column()
-  date_out: Date;
+  dateOut: Date;
 
   @Column()
-  role_id: number;
+  roleId: number;
 
   @Column()
   salary: number;
 
-  @ManyToOne(() => Role, (role) => role.employees)
+  @ManyToOne(() => Role, (role) => role.employees, { eager: true })
   @JoinColumn({
     name: 'role_id',
     referencedColumnName: 'id',

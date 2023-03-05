@@ -22,7 +22,7 @@ export class CreateTableBodyDto {
   @Min(TABLE_SCHEMA.MAX_PEOPLE.MIN)
   @IsInt()
   @IsNotEmpty()
-  max_people: number;
+  maxPeople: number;
 
   @ApiPropertyOptional({ description: 'description', example: '' })
   @MaxLength(TABLE_SCHEMA.DESCRIPTION.LENGTH)
@@ -34,5 +34,5 @@ export class CreateTableBodyDto {
   @ApiProperty({ description: 'floor id', example: 1 })
   @IsInt()
   @IsNotEmpty()
-  floor_id: number;
+  floorId: number;
 }

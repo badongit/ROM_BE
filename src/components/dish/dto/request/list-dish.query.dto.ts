@@ -12,5 +12,5 @@ export class ListDishQueryDto extends PaginationQueryDto {
   @ApiPropertyOptional({ description: 'category id', example: 1 })
   @IsNumber()
   @IsOptional()
-  category_id: number;
+  categoryId: number;
 }

@@ -133,7 +133,7 @@ export class TableService implements ITableService {
   }
 
   async validateBeforeSave(request: any): Promise<ResponsePayload<any> | null> {
-    const { id, code, floor_id } = request;
+    const { id, code, floorId } = request;
 
     const existedCodeConditions: any = {};
 
@@ -150,8 +150,8 @@ export class TableService implements ITableService {
       existedCodeConditions.id = Not(Equal(id));
     }
 
-    if (floor_id) {
-      const floorExisted = await this.floorRepository.findById(floor_id);
+    if (floorId) {
+      const floorExisted = await this.floorRepository.findById(floorId);
 
       if (!floorExisted) {
         return new ApiError(

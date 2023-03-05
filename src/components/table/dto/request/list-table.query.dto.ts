@@ -9,7 +9,7 @@ export class ListTableQueryDto extends PaginationQueryDto {
   @Transform((value) => +value)
   @IsInt()
   @IsOptional()
-  floor_id: number;
+  floorId: number;
 
   @ApiPropertyOptional({
     description: "table's status",

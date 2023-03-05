@@ -45,13 +45,13 @@ export class CategoryRepository
     const conditions: any = {};
 
     if (isEmpty(sort)) {
-      sortObj.created_at = SortEnum.DESC;
+      sortObj.createdAt = SortEnum.DESC;
     } else {
       sort.forEach((item) => {
         switch (item.column) {
           case 'name':
           case 'active':
-          case 'created_at':
+          case 'createdAt':
             sortObj[item.column] = item.order;
             break;
         }

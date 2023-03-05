@@ -13,7 +13,7 @@ export class DetailTableResponseDto extends DetailResponseDto {
 
   @ApiProperty({ example: 5 })
   @Expose()
-  max_people: number;
+  maxPeople: number;
 
   @ApiProperty({ example: '' })
   @Expose()
@@ -25,5 +25,5 @@ export class DetailTableResponseDto extends DetailResponseDto {
 
   @ApiProperty({ example: 1 })
   @Expose()
-  floor_id: number;
+  floorId: number;
 }

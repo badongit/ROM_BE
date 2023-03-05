@@ -12,10 +12,10 @@ export class Store {
   id: number;
 
   @CreateDateColumn({ type: 'timestamptz' })
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
-  updated_at: Date;
+  updatedAt: Date;
 
   @Column()
   name: string;
@@ -24,7 +24,7 @@ export class Store {
   image: string;
 
   @Column()
-  phone_number: string;
+  phoneNumber: string;
 
   @Column()
   address: string;

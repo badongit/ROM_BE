@@ -22,18 +22,18 @@ export class CustomerRepository
   }
 
   createEntity(request: CreateCustomerBodyDto): Customer {
-    const { name, phone_number } = request;
+    const { name, phoneNumber } = request;
     const entity = new Customer();
     entity.name = name;
-    entity.phone_number = phone_number;
+    entity.phoneNumber = phoneNumber;
     entity.point = 0;
 
     return entity;
   }
   updateEntity(entity: Customer, request: UpdateCustomerBodyDto): Customer {
-    const { name, phone_number } = request;
+    const { name, phoneNumber } = request;
     entity.name = name;
-    entity.phone_number = phone_number;
+    entity.phoneNumber = phoneNumber;
 
     return entity;
   }
@@ -45,14 +45,14 @@ export class CustomerRepository
     const conditions: any = {};
 
     if (isEmpty(sort)) {
-      sortObj.created_at = SortEnum.DESC;
+      sortObj.createdAt = SortEnum.DESC;
     } else {
       sort.forEach((item) => {
         switch (item.column) {
           case 'name':
-          case 'phone_number':
+          case 'phoneNumber':
           case 'point':
-          case 'created_at':
+          case 'createdAt':
             sortObj[item.column] = item.order;
             break;
         }

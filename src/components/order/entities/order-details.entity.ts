@@ -4,7 +4,7 @@ import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { OrderDetailEnum } from '../constants/status.enum';
 import { Order } from './order.entity';
 
-@Entity({ name: 'order_details' })
+@Entity({ name: 'orderDetails' })
 export class OrderDetail extends BaseEntity {
   @Column()
   quantity: number;
@@ -19,16 +19,16 @@ export class OrderDetail extends BaseEntity {
   note: string;
 
   @Column()
-  order_id: number;
+  orderId: number;
 
   @Column()
-  dish_id: number;
+  dishId: number;
 
   @ManyToOne(() => Order, (order) => order.details)
   @JoinColumn({ name: 'order_id', referencedColumnName: 'id' })
   order: Order;
 
-  @ManyToOne(() => Dish, (dish) => dish.order_details)
+  @ManyToOne(() => Dish, (dish) => dish.orderDetails)
   @JoinColumn({ name: 'dish_id', referencedColumnName: 'id' })
   dish: Dish;
 }

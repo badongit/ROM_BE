@@ -7,7 +7,7 @@ export class LoginRequestDto {
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsNotEmpty()
-  phone_number: string;
+  phoneNumber: string;
 
   @ApiProperty({ example: '123456' })
   @IsString()

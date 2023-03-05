@@ -13,13 +13,13 @@ export class Order extends BaseEntity {
   code: string;
 
   @Column()
-  payment_reality: number;
+  paymentReality: number;
 
   @Column()
-  payment_method: number;
+  paymentMethod: number;
 
   @Column()
-  point_used: number;
+  pointUsed: number;
 
   @Column()
   status: OrderStatusEnum;
@@ -31,16 +31,16 @@ export class Order extends BaseEntity {
   note: string;
 
   @Column()
-  table_id: number;
+  tableId: number;
 
   @Column()
-  customer_id: number;
+  customerId: number;
 
   @Column()
-  cashier_id: number;
+  cashierId: number;
 
   @Column()
-  waiting_ticket: string;
+  waitingTicket: string;
 
   @ManyToOne(() => Table, (table) => table.orders)
   @JoinColumn({

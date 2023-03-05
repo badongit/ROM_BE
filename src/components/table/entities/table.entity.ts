@@ -13,7 +13,7 @@ export class Table extends BaseEntity {
   status: TableStatusEnum;
 
   @Column()
-  max_people: number;
+  maxPeople: number;
 
   @Column()
   description: string;
@@ -22,7 +22,7 @@ export class Table extends BaseEntity {
   note: string;
 
   @Column()
-  floor_id: number;
+  floorId: number;
 
   @ManyToOne(() => Floor, (floor) => floor.tables)
   @JoinColumn({ name: 'floor_id', referencedColumnName: 'id' })

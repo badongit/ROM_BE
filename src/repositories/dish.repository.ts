@@ -22,52 +22,52 @@ export class DishRepository
   }
 
   createEntity(request: CreateDishBodyDto): Dish {
-    const { name, price, description, category_id } = request;
+    const { name, price, description, categoryId } = request;
     const entity = new Dish();
     entity.name = name;
     entity.price = price;
     entity.status = DishStatusEnum.READY;
     entity.image = 'images';
     entity.description = description;
-    entity.category_id = category_id;
+    entity.categoryId = categoryId;
 
     return entity;
   }
 
   updateEntity(entity: Dish, request: UpdateDishBodyDto): Dish {
-    const { name, price, status, description, category_id } = request;
+    const { name, price, status, description, categoryId } = request;
     entity.name = name;
     entity.price = price;
     entity.status = status;
     entity.description = description;
-    entity.category_id = category_id;
+    entity.categoryId = categoryId;
 
     return entity;
   }
 
   list(request: ListDishQueryDto): Promise<[Dish[], number]> {
-    const { sort, take, skip, category_id, status } = request;
+    const { sort, take, skip, categoryId, status } = request;
     const sortObj: any = {};
     const conditions: any = {};
 
     if (isEmpty(sort)) {
-      sortObj.created_at = SortEnum.DESC;
+      sortObj.createdAt = SortEnum.DESC;
     } else {
       sort.forEach((item) => {
         switch (item.column) {
           case 'name':
           case 'status':
           case 'price':
-          case 'category_id':
-          case 'created_at':
+          case 'categoryId':
+          case 'createdAt':
             sortObj[item.column] = item.order;
             break;
         }
       });
     }
 
-    if (category_id) {
-      conditions.category_id = category_id;
+    if (categoryId) {
+      conditions.categoryId = categoryId;
     }
 
     if (isDefined(status)) {

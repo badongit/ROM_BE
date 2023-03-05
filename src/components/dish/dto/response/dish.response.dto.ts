@@ -24,5 +24,5 @@ export class DishResponseDto {
 
   @ApiProperty({ example: 1 })
   @Expose()
-  category_id: number;
+  categoryId: number;
 }

@@ -25,5 +25,5 @@ export class DetailDishResponseDto extends DetailResponseDto {
 
   @ApiProperty({ example: 1 })
   @Expose()
-  category_id: number;
+  categoryId: number;
 }

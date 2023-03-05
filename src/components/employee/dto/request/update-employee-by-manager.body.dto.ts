@@ -15,10 +15,10 @@ export class UpdateEmployeeByManagerBodyDto extends UpdateEmployeeBodyDto {
   @ApiPropertyOptional({ example: '2023-01-21T07:48:18.262Z' })
   @IsDateString()
   @IsOptional()
-  date_join: Date;
+  dateJoin: Date;
 
   @ApiPropertyOptional({ example: '2023-01-21T07:48:18.262Z' })
   @IsDateString()
   @IsOptional()
-  date_out: Date;
+  dateOut: Date;
 }

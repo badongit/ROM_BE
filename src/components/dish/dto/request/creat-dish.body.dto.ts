@@ -35,5 +35,5 @@ export class CreateDishBodyDto {
   @ApiProperty({ description: 'category id', example: 1 })
   @IsInt()
   @IsNotEmpty()
-  category_id: number;
+  categoryId: number;
 }
