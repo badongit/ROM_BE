@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Inject, Res } from '@nestjs/common/decorators';
+import { Inject } from '@nestjs/common/decorators';
+import { FILE_CONSTANT } from '@src/constants/common';
 import { MessageEnum } from '@src/constants/enum/message.enum';
 import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
 import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
 import { ResponsePayload } from '@src/core/interfaces/response-payload';
 import { ApiError } from '@src/utils/api-error';
+import { removeFile } from '@src/utils/common';
 import { ResponseBuilder } from '@src/utils/response-builder';
 import { plainToClass } from 'class-transformer';
+import * as fs from 'fs';
+import path from 'path';
 import { ICategoryRepository } from '../category/interfaces/category.repository.interface';
 import { CreateDishBodyDto } from './dto/request/creat-dish.body.dto';
 import { ListDishQueryDto } from './dto/request/list-dish.query.dto';
@@ -46,6 +50,7 @@ export class DishService implements IDishService {
     request: IdParamsDto & UpdateDishBodyDto,
   ): Promise<ResponsePayload<any>> {
     const existed = await this.dishRepository.findById(request.id);
+    const oldImage = existed.image;
 
     if (!existed) {
       return new ApiError(
@@ -69,6 +74,10 @@ export class DishService implements IDishService {
 
     const entity = this.dishRepository.updateEntity(existed, request);
     await this.dishRepository.save(entity);
+
+    if (request.image) {
+      removeFile(oldImage);
+    }
 
     return new ResponseBuilder().build();
   }
@@ -117,6 +126,7 @@ export class DishService implements IDishService {
     }
 
     await this.dishRepository.softDelete(request.id);
+    removeFile(existed.image);
     return new ResponseBuilder().build();
   }
 }

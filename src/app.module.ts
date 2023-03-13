@@ -14,6 +14,9 @@ import { EmployeeModule } from './components/employee/employee.module';
 import { OrderModule } from './components/order/order.module';
 import { AuthenticationModule } from './components/authentication/authentication.module';
 import AppDataSource from './configs/database.config';
+import { MulterModule } from '@nestjs/platform-express';
+import { multerDiskStorage } from './utils/common';
+import { FILE_CONSTANT } from './constants/common';
 
 @Module({
   imports: [
@@ -29,6 +32,9 @@ import AppDataSource from './configs/database.config';
     EmployeeModule,
     OrderModule,
     AuthenticationModule,
+    MulterModule.register({
+      storage: multerDiskStorage,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

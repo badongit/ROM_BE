@@ -1,4 +1,3 @@
-import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
 import { BaseRepository } from '@src/core/repositories/base.repository';
 import { CreateDishBodyDto } from '../dto/request/creat-dish.body.dto';
 import { ListDishQueryDto } from '../dto/request/list-dish.query.dto';

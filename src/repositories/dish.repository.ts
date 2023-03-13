@@ -22,12 +22,12 @@ export class DishRepository
   }
 
   createEntity(request: CreateDishBodyDto): Dish {
-    const { name, price, description, categoryId } = request;
+    const { name, price, description, categoryId, image } = request;
     const entity = new Dish();
     entity.name = name;
     entity.price = price;
     entity.status = DishStatusEnum.READY;
-    entity.image = 'images';
+    entity.image = image.filename;
     entity.description = description;
     entity.categoryId = categoryId;
 
@@ -35,12 +35,13 @@ export class DishRepository
   }
 
   updateEntity(entity: Dish, request: UpdateDishBodyDto): Dish {
-    const { name, price, status, description, categoryId } = request;
+    const { name, price, status, description, categoryId, image } = request;
     entity.name = name;
     entity.price = price;
     entity.status = status;
     entity.description = description;
     entity.categoryId = categoryId;
+    entity.image = image.filename;
 
     return entity;
   }

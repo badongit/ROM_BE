@@ -13,3 +13,10 @@ export const REDIS_CONSTANT = {
   PORT: process.env.REDIS_PORT,
   PASS: process.env.REDIS_PASS,
 };
+
+export const FILE_CONSTANT = {
+  MAX_FILE_SIZE: +process.env.MAX_FILE_SIZE,
+  FILE_FOLDER: './uploads',
+};
+
+export const SUCCESS_CODE = [200, 201];

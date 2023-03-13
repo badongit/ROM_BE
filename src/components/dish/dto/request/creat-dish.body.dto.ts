@@ -22,6 +22,7 @@ export class CreateDishBodyDto {
   @ApiProperty({ description: "dish's price", example: 156000 })
   @Min(DISH_SCHEMA.PRICE.MIN)
   @IsNumber()
+  @Transform(({ value }) => +value)
   @IsNotEmpty()
   price: number;
 
@@ -34,6 +35,9 @@ export class CreateDishBodyDto {
 
   @ApiProperty({ description: 'category id', example: 1 })
   @IsInt()
+  @Transform(({ value }) => +value)
   @IsNotEmpty()
   categoryId: number;
+
+  image: Express.Multer.File;
 }

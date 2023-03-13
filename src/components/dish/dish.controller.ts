@@ -3,20 +3,30 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
+  ParseFilePipeBuilder,
   Patch,
   Post,
-  Inject,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { SUCCESS_CODE } from '@src/constants/common';
+import { MessageEnum } from '@src/constants/enum/message.enum';
 import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
 import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
+import { FileValidatonPipe } from '@src/core/pipes/file-validation.pipe';
+import { ApiError } from '@src/utils/api-error';
+import { removeFile } from '@src/utils/common';
+import { ResponseBuilder } from '@src/utils/response-builder';
 import { CreateDishBodyDto } from './dto/request/creat-dish.body.dto';
 import { ListDishQueryDto } from './dto/request/list-dish.query.dto';
 import { UpdateDishBodyDto } from './dto/request/update-dish.body.dto';
@@ -34,9 +44,14 @@ export class DishController {
   ) {}
 
   @Post()
+  @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Create' })
   @ApiResponse({ status: ResponseCodeEnum.CREATED })
-  create(@Body() body: CreateDishBodyDto) {
+  create(
+    @Body() body: CreateDishBodyDto,
+    @UploadedFile(FileValidatonPipe) file: Express.Multer.File,
+  ) {
+    body.image = file;
     return this.dishService.create(body);
   }
 
@@ -55,10 +70,22 @@ export class DishController {
   }
 
   @Patch(':id')
+  @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Update' })
   @ApiResponse({ status: ResponseCodeEnum.OK })
-  update(@Param() params: IdParamsDto, @Body() body: UpdateDishBodyDto) {
-    return this.dishService.update({ ...params, ...body });
+  async update(
+    @Param() params: IdParamsDto,
+    @Body() body: UpdateDishBodyDto,
+    @UploadedFile(FileValidatonPipe) file?: Express.Multer.File,
+  ) {
+    body.image = file;
+    const response = await this.dishService.update({ ...params, ...body });
+
+    if (file && !SUCCESS_CODE.includes(response.statusCode)) {
+      removeFile(file.filename);
+    }
+
+    return response;
   }
 
   @Delete(':id')

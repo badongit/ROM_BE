@@ -23,12 +23,14 @@ export class UpdateDishBodyDto {
   @ApiPropertyOptional({ description: "dish's status", example: 1 })
   @Min(DISH_SCHEMA.PRICE.MIN)
   @IsEnum(DishStatusEnum)
+  @Transform(({ value }) => +value)
   @IsOptional()
   status: DishStatusEnum;
 
   @ApiPropertyOptional({ description: "dish's price", example: 156000 })
   @Min(DISH_SCHEMA.PRICE.MIN)
   @IsNumber()
+  @Transform(({ value }) => +value)
   @IsOptional()
   price: number;
 
@@ -41,6 +43,9 @@ export class UpdateDishBodyDto {
 
   @ApiPropertyOptional({ description: 'category id', example: 1 })
   @IsInt()
+  @Transform(({ value }) => +value)
   @IsOptional()
   categoryId: number;
+
+  image: Express.Multer.File;
 }
