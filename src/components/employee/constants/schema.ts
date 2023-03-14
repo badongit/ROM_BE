@@ -5,9 +5,6 @@ const EMPLOYEE_SCHEMA = {
   CODE: {
     LENGTH: 5,
   },
-  PHONE_NUMBER: {
-    REGEX: /^[0]\d{9}$/,
-  },
   PASSWORD: {
     MIN_LENGTH: 8,
     MAX_LENGTH: 30,

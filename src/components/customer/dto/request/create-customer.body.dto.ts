@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { COMMON_SCHEMA } from '@src/constants/common';
 import { Transform } from 'class-transformer';
 import {
   IsNotEmpty,
@@ -18,7 +19,7 @@ export class CreateCustomerBodyDto {
   name: string;
 
   @ApiProperty({ example: '0123456789' })
-  @Matches(CUSTOMER_SCHEMA.PHONE_NUMBER.REGEX)
+  @Matches(COMMON_SCHEMA.PHONE_NUMBER.REGEX)
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsNotEmpty()

@@ -8,7 +8,6 @@ export const multerDiskStorage = diskStorage({
   filename(req: any, file, callback) {
     const fileName =
       randomString(10) + '-' + Date.now() + path.parse(file.originalname).ext;
-    console.log('🚀 ~ file: common.ts:10 ~ filename ~ fileName:', fileName);
     file.filename = fileName;
 
     callback(null, fileName);

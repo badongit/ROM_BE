@@ -47,12 +47,18 @@ export class DishController {
   @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Create' })
   @ApiResponse({ status: ResponseCodeEnum.CREATED })
-  create(
+  async create(
     @Body() body: CreateDishBodyDto,
     @UploadedFile(FileValidatonPipe) file: Express.Multer.File,
   ) {
     body.image = file;
-    return this.dishService.create(body);
+    const response = await this.dishService.create(body);
+
+    if (file && !SUCCESS_CODE.includes(response.statusCode)) {
+      removeFile(file.filename);
+    }
+
+    return response;
   }
 
   @Get()

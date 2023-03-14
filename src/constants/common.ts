@@ -20,3 +20,12 @@ export const FILE_CONSTANT = {
 };
 
 export const SUCCESS_CODE = [200, 201];
+
+export const COMMON_SCHEMA = {
+  PHONE_NUMBER: {
+    REGEX: /^[0]\d{9}$/,
+  },
+  DESCRIPTION: {
+    MAX_LENGTH: 255,
+  },
+};

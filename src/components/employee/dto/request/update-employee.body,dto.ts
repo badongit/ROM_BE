@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { COMMON_SCHEMA } from '@src/constants/common';
 import { Transform } from 'class-transformer';
 import {
   IsDateString,
@@ -20,7 +21,7 @@ export class UpdateEmployeeBodyDto {
   name: string;
 
   @ApiPropertyOptional({ example: '0123456789' })
-  @Matches(EMPLOYEE_SCHEMA.PHONE_NUMBER.REGEX)
+  @Matches(COMMON_SCHEMA.PHONE_NUMBER.REGEX)
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsOptional()

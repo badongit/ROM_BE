@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { COMMON_SCHEMA } from '@src/constants/common';
 import { Transform } from 'class-transformer';
 import { IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 import CUSTOMER_SCHEMA from '../../constants/schema';
@@ -12,7 +13,7 @@ export class UpdateCustomerBodyDto {
   name: string;
 
   @ApiPropertyOptional({ example: '0123456789' })
-  @Matches(CUSTOMER_SCHEMA.PHONE_NUMBER.REGEX)
+  @Matches(COMMON_SCHEMA.PHONE_NUMBER.REGEX)
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsOptional()

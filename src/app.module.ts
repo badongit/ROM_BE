@@ -16,7 +16,6 @@ import { AuthenticationModule } from './components/authentication/authentication
 import AppDataSource from './configs/database.config';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerDiskStorage } from './utils/common';
-import { FILE_CONSTANT } from './constants/common';
 
 @Module({
   imports: [
