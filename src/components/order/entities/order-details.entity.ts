@@ -1,10 +1,10 @@
 import { Dish } from '@src/components/dish/entities/dish.entity';
 import { BaseEntity } from '@src/core/entities/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { OrderDetailStatusEnum } from '../constants/status.enum';
+import { OrderDetailStatusEnum } from '../constants/enums';
 import { Order } from './order.entity';
 
-@Entity({ name: 'orderDetails' })
+@Entity({ name: 'order_details' })
 export class OrderDetail extends BaseEntity {
   @Column()
   quantity: number;

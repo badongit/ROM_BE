@@ -70,6 +70,7 @@ export class createOrderDetailsTable1675148954178
         columnNames: ['order_id'],
         referencedColumnNames: ['id'],
         referencedTableName: 'orders',
+        onDelete: 'CASCADE',
       }),
       new TableForeignKey({
         columnNames: ['dish_id'],

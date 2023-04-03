@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import CUSTOMER_SCHEMA from '@src/components/customer/constants/schema';
 import { COMMON_SCHEMA } from '@src/constants/common';
 import { Transform, Type } from 'class-transformer';
 import {
@@ -12,10 +13,10 @@ import {
   MaxLength,
   Min,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
-import { ORDER_DETAIL_SCHEMA, ORDER_SCHEMA } from '../constants/schema';
-import { OrderStatusEnum } from '../constants/status.enum';
-import { OrderTypeEnum } from '../constants/type.enum';
+import { OrderStatusEnum, OrderTypeEnum } from '../../constants/enums';
+import { ORDER_DETAIL_SCHEMA, ORDER_SCHEMA } from '../../constants/schema';
 
 class OrderDetailDto {
   @ApiProperty({ example: 1 })
@@ -42,7 +43,7 @@ class OrderDetailDto {
   dishId: number;
 }
 
-export class CreateOrderDto {
+export class CreateOrderRequestDto {
   @ApiProperty({ example: 0 })
   @IsEnum(OrderTypeEnum)
   @IsNotEmpty()
@@ -54,8 +55,8 @@ export class CreateOrderDto {
   status: OrderStatusEnum;
 
   @ApiPropertyOptional({ example: 'dat ban 10 nguoi' })
-  @IsString()
   @MaxLength(ORDER_SCHEMA.NOTE.LENGTH)
+  @IsString()
   @IsOptional()
   note: string;
 
@@ -66,23 +67,31 @@ export class CreateOrderDto {
   tableId: number;
 
   @ApiProperty({ example: '0123456789' })
-  @IsString()
   @Matches(COMMON_SCHEMA.PHONE_NUMBER.REGEX)
   @Transform(({ value }) => value?.trim())
+  @IsString()
   @IsOptional()
   customerPhoneNumber: string;
 
+  @ApiProperty({ example: 'Nguyễn Bá Đông' })
+  @MaxLength(CUSTOMER_SCHEMA.NAME.LENGTH)
+  @Transform(({ value }) => value?.trim())
+  @IsString()
+  @IsOptional()
+  customerName: string;
+
   @ValidateIf((object) => object.type === OrderTypeEnum.BRING_BACK)
   @ApiProperty({ example: 'H10' })
-  @IsString()
   @MaxLength(ORDER_SCHEMA.WAITING_TICKET.LENGTH)
   @Transform(({ value }) => value?.trim())
+  @IsString()
   @IsNotEmpty()
   waitingTicket: string;
 
   customerId?: number;
 
   @ApiProperty({ type: OrderDetailDto, isArray: true })
+  @ValidateNested({ each: true })
   @Type(() => OrderDetailDto)
   @ArrayNotEmpty()
   details: OrderDetailDto[];

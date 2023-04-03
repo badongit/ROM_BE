@@ -63,6 +63,7 @@ export class createOrderTable1675146958826 implements MigrationInterface {
           {
             name: 'cashier_id',
             type: 'int',
+            isNullable: true,
           },
           {
             name: 'waiting_ticket',

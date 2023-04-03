@@ -8,6 +8,7 @@ import { ResponsePayload } from '@src/core/interfaces/response-payload';
 import { ApiError } from '@src/utils/api-error';
 import { ResponseBuilder } from '@src/utils/response-builder';
 import { Cache } from 'cache-manager';
+import { EmployeeStatusEnum } from '../employee/constants/status.enum';
 import { IEmployeeRepository } from '../employee/interfaces/employee.repository.interface';
 import { DecodeRefreshTokenDto } from './dto/decode-refresh-token.dto';
 import { GetTokenBodyDto } from './dto/request/get-token.body.dto';
@@ -40,6 +41,13 @@ export class AuthenticationService implements IAuthenticationService {
       return new ApiError(
         ResponseCodeEnum.BAD_REQUEST,
         MessageEnum.PHONE_NUMBER_OR_PASSWORD_WRONG,
+      ).toResponse();
+    }
+
+    if (user.status === EmployeeStatusEnum.LEAVE) {
+      return new ApiError(
+        ResponseCodeEnum.BAD_REQUEST,
+        MessageEnum.ACCOUNT_DISABLED,
       ).toResponse();
     }
 

@@ -1,8 +1,10 @@
 import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import { EmployeeStatusEnum } from '@src/components/employee/constants/status.enum';
 import { IEmployeeRepository } from '@src/components/employee/interfaces/employee.repository.interface';
 import { JWT_CONSTANT } from '@src/constants/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Not } from 'typeorm';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -21,6 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.employeeRepository.findOne({
       where: {
         id: payload.id,
+        status: Not(EmployeeStatusEnum.LEAVE),
       },
     });
 

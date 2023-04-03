@@ -1,6 +1,7 @@
 import { diskStorage } from 'multer';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as dayjs from 'dayjs';
 import { FILE_CONSTANT } from '@src/constants/common';
 
 export const multerDiskStorage = diskStorage({
@@ -33,4 +34,8 @@ export const randomString = (length: number): string => {
   }
 
   return result;
+};
+
+export const formatDateToOrderCode = (date?: Date): string => {
+  return dayjs(date || new Date()).format('YYMMDDHHmmss');
 };

@@ -6,6 +6,7 @@ export enum MessageEnum {
   PHONE_NUMBER_OR_PASSWORD_WRONG = 'Số điện thoại hoặc mật khẩu không đúng',
   FILE_SIZE_EXCEEDED_ALLOW = 'Kích thước file quá lớn',
   FILE_TYPE_NOT_ALLOW = 'Loại file không hợp lệ',
+  ACCOUNT_DISABLED = 'Tài khoản đã bị vô hiệu hóa',
 
   // not found
   FLOOR_NOT_FOUND = 'Dữ liệu Tầng không tồn tại',
@@ -14,6 +15,7 @@ export enum MessageEnum {
   DISH_NOT_FOUND = 'Dữ liệu món ăn không tồn tại',
   CUSTOMER_NOT_FOUND = 'Dữ liệu Khách hàng không tồn tại',
   EMPLOYEE_NOT_FOUND = 'Dữ liệu Nhân viên không tồn tại',
+  ORDER_NOT_FOUND = 'Dữ liệu Đơn hàng không tồn tại',
 
   // existed
   CODE_EXISTED = 'Mã đã tồn tại',

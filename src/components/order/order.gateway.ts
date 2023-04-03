@@ -1,34 +1,30 @@
-import { WebSocketGateway, SubscribeMessage, MessageBody } from '@nestjs/websockets';
+import { UseFilters, UsePipes } from '@nestjs/common';
+import {
+  MessageBody,
+  SubscribeMessage,
+  WebSocketGateway,
+} from '@nestjs/websockets';
+import { SUCCESS_CODE } from '@src/constants/common';
+import { WsExceptionFilter } from '@src/core/filters/ws-exception.filter';
+import { CustomValidationPipe } from '@src/core/pipes/validation.pipe';
+import { OrderEventEnum } from './constants/event.enum';
+import { CreateOrderRequestDto } from './dto/request/create-order.request.dto';
 import { OrderService } from './order.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 
 @WebSocketGateway()
+@UseFilters(new WsExceptionFilter())
+@UsePipes(new CustomValidationPipe())
 export class OrderGateway {
   constructor(private readonly orderService: OrderService) {}
 
-  @SubscribeMessage('createOrder')
-  create(@MessageBody() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
-  }
+  @SubscribeMessage(OrderEventEnum.CREATE)
+  async create(@MessageBody() request: CreateOrderRequestDto): Promise<any> {
+    const response = await this.orderService.create(request);
 
-  @SubscribeMessage('findAllOrder')
-  findAll() {
-    return this.orderService.findAll();
-  }
-
-  @SubscribeMessage('findOneOrder')
-  findOne(@MessageBody() id: number) {
-    return this.orderService.findOne(id);
-  }
-
-  @SubscribeMessage('updateOrder')
-  update(@MessageBody() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(updateOrderDto.id, updateOrderDto);
-  }
-
-  @SubscribeMessage('removeOrder')
-  remove(@MessageBody() id: number) {
-    return this.orderService.remove(id);
+    if (SUCCESS_CODE.includes(response.statusCode)) {
+      return { event: OrderEventEnum.SEND_ORDER, data: response.data };
+    } else {
+      return { event: OrderEventEnum.ERROR, data: response.message };
+    }
   }
 }

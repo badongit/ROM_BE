@@ -3,8 +3,11 @@ import { Employee } from '@src/components/employee/entities/employee.entity';
 import { Table } from '@src/components/table/entities/table.entity';
 import { BaseEntity } from '@src/core/entities/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { OrderStatusEnum } from '../constants/status.enum';
-import { OrderTypeEnum } from '../constants/type.enum';
+import {
+  PaymentMethodEnum,
+  OrderStatusEnum,
+  OrderTypeEnum,
+} from '../constants/enums';
 import { OrderDetail } from './order-details.entity';
 
 @Entity({ name: 'orders' })
@@ -16,7 +19,7 @@ export class Order extends BaseEntity {
   paymentReality: number;
 
   @Column()
-  paymentMethod: number;
+  paymentMethod: PaymentMethodEnum;
 
   @Column()
   pointUsed: number;
