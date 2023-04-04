@@ -8,7 +8,9 @@ import { ResponsePayload } from '@src/core/interfaces/response-payload';
 import { ApiError } from '@src/utils/api-error';
 import { ResponseBuilder } from '@src/utils/response-builder';
 import { Cache } from 'cache-manager';
+import { plainToClass } from 'class-transformer';
 import { EmployeeStatusEnum } from '../employee/constants/status.enum';
+import { DetailEmployeeResponseDto } from '../employee/dto/response/detail-employee.response.dto';
 import { IEmployeeRepository } from '../employee/interfaces/employee.repository.interface';
 import { DecodeRefreshTokenDto } from './dto/decode-refresh-token.dto';
 import { GetTokenBodyDto } from './dto/request/get-token.body.dto';
@@ -35,6 +37,9 @@ export class AuthenticationService implements IAuthenticationService {
     const { phoneNumber, password } = request;
     const user = await this.employeeRepository.findOne({
       where: { phoneNumber: phoneNumber },
+      relations: {
+        role: true,
+      },
     });
 
     if (!user || !user.validatePassword(password)) {
@@ -55,8 +60,15 @@ export class AuthenticationService implements IAuthenticationService {
     const refreshToken = this._createRefreshToken(user.id);
 
     await this.cacheManager.set(user.id.toString(), refreshToken);
+    const userReturn = plainToClass(DetailEmployeeResponseDto, user, {
+      excludeExtraneousValues: true,
+    });
 
-    return new ResponseBuilder({ accessToken, refreshToken }).build();
+    return new ResponseBuilder({
+      accessToken,
+      refreshToken,
+      user: userReturn,
+    }).build();
   }
 
   async getToken(
