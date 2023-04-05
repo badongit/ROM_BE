@@ -36,7 +36,7 @@ export class FloorRepository
   }
 
   list(request: ListFloorQueryDto): Promise<[Floor[], number]> {
-    const { sort, take, skip } = request;
+    const { sort, take, skip, isGetAll } = request;
     const sortObj: any = {};
 
     if (isEmpty(sort)) {
@@ -52,10 +52,11 @@ export class FloorRepository
       });
     }
 
-    return this.floorRepository.findAndCount({
+    return this.findAndCount({
       order: sortObj,
       take: take,
       skip: skip,
+      isGetAll,
     });
   }
 }

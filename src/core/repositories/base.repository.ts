@@ -29,11 +29,23 @@ export class BaseRepository<Entity extends ObjectLiteral>
     return this.repository.findOne(options);
   }
 
-  find(options?: FindManyOptions<Entity>): Promise<Entity[]> {
+  find(
+    options?: FindManyOptions<Entity> & { isGetAll?: number },
+  ): Promise<Entity[]> {
+    if (options.isGetAll) {
+      delete options['take'];
+      delete options['skip'];
+    }
     return this.repository.find(options);
   }
 
-  findAndCount(options?: FindManyOptions<Entity>): Promise<[Entity[], number]> {
+  findAndCount(
+    options?: FindManyOptions<Entity> & { isGetAll?: number },
+  ): Promise<[Entity[], number]> {
+    if (options.isGetAll) {
+      delete options['take'];
+      delete options['skip'];
+    }
     return this.repository.findAndCount(options);
   }
 

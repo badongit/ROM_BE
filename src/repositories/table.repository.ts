@@ -47,7 +47,7 @@ export class TableRepository
   }
 
   list(request: ListTableQueryDto): Promise<[Table[], number]> {
-    const { sort, take, skip, floorId, status } = request;
+    const { sort, take, skip, floorId, status, isGetAll } = request;
     const sortObj: any = {};
     const conditions: any = {};
 
@@ -74,11 +74,12 @@ export class TableRepository
       conditions.status = status;
     }
 
-    return this.tableRepository.findAndCount({
+    return this.findAndCount({
       where: conditions,
       order: sortObj,
       take: take,
       skip: skip,
+      isGetAll: isGetAll,
     });
   }
 }
