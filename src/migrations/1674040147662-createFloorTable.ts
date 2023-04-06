@@ -19,12 +19,6 @@ export class createFloorTable1674040147662 implements MigrationInterface {
             length: '127',
           },
           {
-            name: 'code',
-            type: 'varchar',
-            length: '5',
-            isUnique: true,
-          },
-          {
             name: 'created_at',
             type: 'timestamptz',
             default: 'now()',

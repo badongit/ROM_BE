@@ -10,11 +10,4 @@ export class UpdateFloorBodyDto {
   @IsString()
   @IsOptional()
   name: string;
-
-  @ApiPropertyOptional({ description: "floor's code", example: 'T01' })
-  @Transform(({ value }) => value.trim().toUpperCase())
-  @MaxLength(FLOOR_SCHEMA.CODE.LENGTH)
-  @IsString()
-  @IsOptional()
-  code: string;
 }

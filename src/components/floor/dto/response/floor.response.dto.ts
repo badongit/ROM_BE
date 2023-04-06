@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { TableResponseDto } from '@src/components/table/dto/response/table.response.dto';
+import { Expose, Type } from 'class-transformer';
 
 export class FloorResponseDto {
   @ApiProperty({ example: 1 })
@@ -10,7 +11,8 @@ export class FloorResponseDto {
   @Expose()
   name: string;
 
-  @ApiProperty({ example: 'T01' })
+  @ApiProperty({ type: TableResponseDto })
+  @Type(() => TableResponseDto)
   @Expose()
-  code: string;
+  tables: TableResponseDto[];
 }

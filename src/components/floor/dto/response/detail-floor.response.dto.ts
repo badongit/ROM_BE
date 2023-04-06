@@ -6,8 +6,4 @@ export class DetailFloorResponseDto extends DetailResponseDto {
   @ApiProperty({ example: 'Tầng 1' })
   @Expose()
   name: string;
-
-  @ApiProperty({ example: 'T01' })
-  @Expose()
-  code: string;
 }

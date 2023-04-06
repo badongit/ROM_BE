@@ -7,9 +7,6 @@ export class Floor extends BaseEntity {
   @Column()
   name: string;
 
-  @Column()
-  code: string;
-
   @OneToMany(() => Table, (table) => table.floor, {
     cascade: ['soft-remove', 'remove'],
   })

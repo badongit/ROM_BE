@@ -23,14 +23,14 @@ export class FloorService implements IFloorService {
   ) {}
   async create(request: CreateFloorBodyDto): Promise<ResponsePayload<any>> {
     const existedFloor = await this.floorRepository.findOne({
-      where: { code: request.code },
+      where: { name: request.name },
       withDeleted: true,
     });
 
     if (existedFloor) {
       return new ApiError(
         ResponseCodeEnum.BAD_REQUEST,
-        MessageEnum.CODE_EXISTED,
+        MessageEnum.NAME_EXISTED,
       ).toResponse();
     }
 
@@ -86,14 +86,14 @@ export class FloorService implements IFloorService {
     }
 
     const existedCode = await this.floorRepository.findOne({
-      where: { code: request.code, id: Not(Equal(request.id)) },
+      where: { name: request.name, id: Not(Equal(request.id)) },
       withDeleted: true,
     });
 
     if (existedCode) {
       return new ApiError(
         ResponseCodeEnum.BAD_REQUEST,
-        MessageEnum.CODE_EXISTED,
+        MessageEnum.NAME_EXISTED,
       ).toResponse();
     }
 

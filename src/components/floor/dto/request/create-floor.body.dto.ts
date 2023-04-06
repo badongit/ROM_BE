@@ -10,11 +10,4 @@ export class CreateFloorBodyDto {
   @IsString()
   @IsNotEmpty()
   name: string;
-
-  @ApiProperty({ description: "floor's code", example: 'T01' })
-  @Transform(({ value }) => value.trim().toUpperCase())
-  @MaxLength(FLOOR_SCHEMA.CODE.LENGTH)
-  @IsString()
-  @IsNotEmpty()
-  code: string;
 }
