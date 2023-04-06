@@ -8,7 +8,7 @@ export class TableResponseDto {
 
   @ApiProperty({ example: 'T01-B1' })
   @Expose()
-  code: number;
+  code: string;
 
   @ApiProperty({ example: 1 })
   @Expose()
