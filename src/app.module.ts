@@ -16,11 +16,16 @@ import { AuthenticationModule } from './components/authentication/authentication
 import AppDataSource from './configs/database.config';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerDiskStorage } from './utils/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(AppDataSource.options),
     ConfigModule.forRoot({ isGlobal: true }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+    }),
     FloorModule,
     TableModule,
     CategoryModule,

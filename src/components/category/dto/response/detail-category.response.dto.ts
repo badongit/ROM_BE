@@ -7,6 +7,10 @@ export class DetailCategoryResponseDto extends DetailResponseDto {
   @Expose()
   name: string;
 
+  @ApiProperty({ example: 'asjhkfasf' })
+  @Expose()
+  image: string;
+
   @ApiProperty({ example: true })
   @Expose()
   active: boolean;

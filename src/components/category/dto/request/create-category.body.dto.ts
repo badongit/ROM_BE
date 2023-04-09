@@ -20,4 +20,6 @@ export class CreateCategoryBodyDto {
   @IsString()
   @IsOptional()
   description: string;
+
+  image?: Express.Multer.File;
 }

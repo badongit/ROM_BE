@@ -39,5 +39,5 @@ export class CreateDishBodyDto {
   @IsNotEmpty()
   categoryId: number;
 
-  image: Express.Multer.File;
+  image?: Express.Multer.File;
 }

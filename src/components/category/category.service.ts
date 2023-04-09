@@ -14,6 +14,7 @@ import { UpdateCategoryBodyDto } from './dto/request/update-category.body.dto';
 import { CategoryResponseDto } from './dto/response/category.response.dto';
 import { DetailCategoryResponseDto } from './dto/response/detail-category.response.dto';
 import { ICategoryService } from './interfaces/category.service.interface';
+import { removeFile } from '@src/utils/common';
 
 @Injectable()
 export class CategoryService implements ICategoryService {
@@ -120,6 +121,8 @@ export class CategoryService implements ICategoryService {
     }
 
     await this.categoryRepository.softDelete(request.id);
+    removeFile(existed.image);
+
     return new ResponseBuilder().build();
   }
 }

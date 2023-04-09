@@ -8,6 +8,8 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,6 +25,10 @@ import { UpdateCategoryBodyDto } from './dto/request/update-category.body.dto';
 import { CategoryResponseDto } from './dto/response/category.response.dto';
 import { DetailCategoryResponseDto } from './dto/response/detail-category.response.dto';
 import { ICategoryService } from './interfaces/category.service.interface';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileValidatonPipe } from '@src/core/pipes/file-validation.pipe';
+import { removeFile } from '@src/utils/common';
+import { SUCCESS_CODE } from '@src/constants/common';
 
 @ApiBearerAuth()
 @ApiTags('Categories')
@@ -34,10 +40,21 @@ export class CategoryController {
   ) {}
 
   @Post()
+  @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Create category' })
   @ApiResponse({ status: ResponseCodeEnum.CREATED })
-  create(@Body() body: CreateCategoryBodyDto) {
-    return this.categoryService.create(body);
+  async create(
+    @Body() body: CreateCategoryBodyDto,
+    @UploadedFile(FileValidatonPipe) file: Express.Multer.File,
+  ) {
+    body.image = file;
+    const response = await this.categoryService.create(body);
+
+    if (file && !SUCCESS_CODE.includes(response.statusCode)) {
+      removeFile(file.filename);
+    }
+
+    return response;
   }
 
   @Get()
@@ -55,10 +72,22 @@ export class CategoryController {
   }
 
   @Patch(':id')
+  @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Update category' })
   @ApiResponse({ status: ResponseCodeEnum.OK })
-  update(@Param() params: IdParamsDto, @Body() body: UpdateCategoryBodyDto) {
-    return this.categoryService.update({ ...params, ...body });
+  async update(
+    @Param() params: IdParamsDto,
+    @Body() body: UpdateCategoryBodyDto,
+    @UploadedFile(FileValidatonPipe) file: Express.Multer.File,
+  ) {
+    body.image = file;
+    const response = await this.categoryService.update({ ...params, ...body });
+
+    if (file && !SUCCESS_CODE.includes(response.statusCode)) {
+      removeFile(file.filename);
+    }
+
+    return response;
   }
 
   @Delete(':id')

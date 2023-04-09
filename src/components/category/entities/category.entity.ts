@@ -11,6 +11,9 @@ export class Category extends BaseEntity {
   active: boolean;
 
   @Column()
+  image: string;
+
+  @Column()
   description: string;
 
   @OneToMany(() => Dish, (dish) => dish.category, { cascade: ['soft-remove'] })

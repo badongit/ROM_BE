@@ -47,5 +47,5 @@ export class UpdateDishBodyDto {
   @IsOptional()
   categoryId: number;
 
-  image: Express.Multer.File;
+  image?: Express.Multer.File;
 }

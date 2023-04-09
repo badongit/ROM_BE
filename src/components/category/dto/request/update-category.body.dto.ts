@@ -25,4 +25,6 @@ export class UpdateCategoryBodyDto {
   @IsString()
   @IsOptional()
   description: string;
+
+  image?: Express.Multer.File;
 }

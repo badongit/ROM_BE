@@ -7,7 +7,7 @@ import { ICategoryRepository } from '@src/components/category/interfaces/categor
 import { SortEnum } from '@src/constants/enum/sort.enum';
 import { BaseRepository } from '@src/core/repositories/base.repository';
 import { isEmpty } from 'class-validator';
-import { ILike, Repository } from 'typeorm';
+import { FindManyOptions, ILike, Repository } from 'typeorm';
 
 export class CategoryRepository
   extends BaseRepository<Category>
@@ -24,23 +24,25 @@ export class CategoryRepository
     const entity = new Category();
     entity.name = request.name;
     entity.active = true;
+    entity.image = request.image.filename;
     entity.description = request.description;
 
     return entity;
   }
 
   updateEntity(entity: Category, request: UpdateCategoryBodyDto): Category {
-    const { name, active, description } = request;
+    const { name, active, description, image } = request;
 
     entity.name = name;
     entity.active = active;
+    entity.image = image.filename;
     entity.description = description;
 
     return entity;
   }
 
   list(request: ListCategoryQueryDto): Promise<[Category[], number]> {
-    const { sort, take, skip } = request;
+    const { sort, take, skip, isGetAll, isGetDishes } = request;
     const sortObj: any = {};
     const conditions: any = {};
 
@@ -62,11 +64,22 @@ export class CategoryRepository
       conditions.name = ILike(`%${request.keyword}%`);
     }
 
-    return this.categoryRepository.findAndCount({
+    const findOptions: FindManyOptions<Category> & {
+      isGetAll?: number;
+    } = {
       where: conditions,
       order: sortObj,
       take: take,
       skip: skip,
-    });
+      isGetAll: isGetAll,
+    };
+
+    if (isGetDishes) {
+      findOptions.relations = {
+        dishes: true,
+      };
+    }
+
+    return this.findAndCount(findOptions);
   }
 }

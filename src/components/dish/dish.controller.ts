@@ -5,7 +5,6 @@ import {
   Get,
   Inject,
   Param,
-  ParseFilePipeBuilder,
   Patch,
   Post,
   Query,
@@ -20,13 +19,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { SUCCESS_CODE } from '@src/constants/common';
-import { MessageEnum } from '@src/constants/enum/message.enum';
 import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
 import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
 import { FileValidatonPipe } from '@src/core/pipes/file-validation.pipe';
-import { ApiError } from '@src/utils/api-error';
 import { removeFile } from '@src/utils/common';
-import { ResponseBuilder } from '@src/utils/response-builder';
 import { CreateDishBodyDto } from './dto/request/creat-dish.body.dto';
 import { ListDishQueryDto } from './dto/request/list-dish.query.dto';
 import { UpdateDishBodyDto } from './dto/request/update-dish.body.dto';

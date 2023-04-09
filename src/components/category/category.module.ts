@@ -4,9 +4,16 @@ import { CategoryController } from './category.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { CategoryRepository } from '@src/repositories/category.repository';
+import { MulterModule } from '@nestjs/platform-express';
+import { multerDiskStorage } from '@src/utils/common';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Category])],
+  imports: [
+    TypeOrmModule.forFeature([Category]),
+    MulterModule.register({
+      storage: multerDiskStorage,
+    }),
+  ],
   controllers: [CategoryController],
   providers: [
     { provide: 'ICategoryService', useClass: CategoryService },
