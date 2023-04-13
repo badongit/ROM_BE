@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import AppDataSource from '@src/configs/database.config';
 import { MessageEnum } from '@src/constants/enum/message.enum';
 import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
 import { ResponsePayload } from '@src/core/interfaces/response-payload';
@@ -6,15 +7,19 @@ import { ApiError } from '@src/utils/api-error';
 import { ResponseBuilder } from '@src/utils/response-builder';
 import { plainToClass } from 'class-transformer';
 import { isEmpty, map, uniq } from 'lodash';
-import { In } from 'typeorm';
+import { DataSource, FindOptionsWhere, In, Not } from 'typeorm';
 import { CreateCustomerBodyDto } from '../customer/dto/request/create-customer.body.dto';
 import { Customer } from '../customer/entities/customer.entity';
 import { ICustomerRepository } from '../customer/interfaces/customer.repository.interface';
 import { IDishRepository } from '../dish/interfaces/dish.repository.interface';
 import { ITableRepository } from '../table/interfaces/table.repository.interface';
 import { CreateOrderRequestDto } from './dto/request/create-order.request.dto';
+import { UpdateOrderRequestDto } from './dto/request/update-order.request.dto';
+import { DetailOrderResponseDto } from './dto/response/detail-order.response.dto';
 import { OrderResponseDto } from './dto/response/order.response.dto';
+import { OrderDetail } from './entities/order-details.entity';
 import { Order } from './entities/order.entity';
+import { IOrderDetailRepository } from './interfaces/order-detail.repository.interface';
 import { IOrderRepository } from './interfaces/order.repository.interface';
 import { IOrderService } from './interfaces/order.service.interface';
 @Injectable()
@@ -22,6 +27,9 @@ export class OrderService implements IOrderService {
   constructor(
     @Inject('IOrderRepository')
     private readonly orderRepository: IOrderRepository,
+
+    @Inject('IOrderDetailRepository')
+    private readonly orderDetailRepository: IOrderDetailRepository,
 
     @Inject('ITableRepository')
     private readonly tableRepository: ITableRepository,
@@ -35,7 +43,7 @@ export class OrderService implements IOrderService {
 
   async create(
     request: CreateOrderRequestDto,
-  ): Promise<ResponsePayload<OrderResponseDto>> {
+  ): Promise<ResponsePayload<DetailOrderResponseDto>> {
     const [responseError, , customer] = await this.validateBeforeSave(request);
 
     if (responseError) {
@@ -48,7 +56,76 @@ export class OrderService implements IOrderService {
     }
     const order = await this.orderRepository.save(orderEntity);
 
-    const dataReturn = plainToClass(OrderResponseDto, order, {
+    const dataReturn = plainToClass(DetailOrderResponseDto, order, {
+      excludeExtraneousValues: true,
+    });
+
+    return new ResponseBuilder(dataReturn).build();
+  }
+
+  async update(
+    request: UpdateOrderRequestDto,
+  ): Promise<ResponsePayload<DetailOrderResponseDto | any>> {
+    const [responseError, orderExisted, customer] =
+      await this.validateBeforeSave(request);
+
+    if (responseError) {
+      return responseError;
+    }
+
+    const findDetailConditions: FindOptionsWhere<OrderDetail> = {
+      orderId: request.id,
+    };
+
+    const detailIds: number[] = [];
+
+    for (const detail of request.details) {
+      if (detail.id) detailIds.push(detail.id);
+    }
+
+    if (!isEmpty(detailIds)) {
+      findDetailConditions.id = Not(In(detailIds));
+    }
+
+    const orderDetails = await this.orderDetailRepository.find({
+      where: findDetailConditions,
+    });
+
+    const orderEntity = await this.orderRepository.updateEntity(
+      orderExisted,
+      request,
+    );
+
+    if (customer) {
+      orderEntity.customer = customer;
+    }
+
+    let order: Order = null;
+    let error: Error = null;
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await queryRunner.manager.delete(OrderDetail, orderDetails);
+      order = await queryRunner.manager.save(orderEntity);
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      error = error;
+    } finally {
+      await queryRunner.release();
+    }
+
+    if (error) {
+      return new ResponseBuilder()
+        .withCode(ResponseCodeEnum.BAD_REQUEST)
+        .withMessage(MessageEnum.ERROR_HAPPENED)
+        .build();
+    }
+
+    const dataReturn = plainToClass(DetailOrderResponseDto, order, {
       excludeExtraneousValues: true,
     });
 

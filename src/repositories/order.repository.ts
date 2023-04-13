@@ -6,6 +6,7 @@ import {
   OrderStatusEnum,
 } from '@src/components/order/constants/enums';
 import { CreateOrderRequestDto } from '@src/components/order/dto/request/create-order.request.dto';
+import { UpdateOrderRequestDto } from '@src/components/order/dto/request/update-order.request.dto';
 import { OrderDetail } from '@src/components/order/entities/order-details.entity';
 import { Order } from '@src/components/order/entities/order.entity';
 import { IOrderRepository } from '@src/components/order/interfaces/order.repository.interface';
@@ -48,5 +49,26 @@ export class OrderRepository
     });
 
     return orderEntity;
+  }
+
+  updateEntity(entity: Order, request: UpdateOrderRequestDto): Order {
+    const { note, customerId, details } = request;
+    entity.note = note;
+    entity.customerId = customerId;
+    entity.details = details.map((detail) => {
+      const { quantity, price, note, dishId, id } = detail;
+      const detailEntity = new OrderDetail();
+      detailEntity.id = id;
+      detailEntity.quantity = quantity;
+      detailEntity.price = price;
+      detailEntity.note = note;
+      detailEntity.dishId = dishId;
+      if (!id) {
+        detailEntity.status = OrderDetailStatusEnum.WAIT_CONFIRM;
+      }
+      return detailEntity;
+    });
+
+    return entity;
   }
 }

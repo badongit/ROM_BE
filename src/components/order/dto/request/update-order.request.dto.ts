@@ -15,10 +15,14 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { OrderStatusEnum, OrderTypeEnum } from '../../constants/enums';
 import { ORDER_DETAIL_SCHEMA, ORDER_SCHEMA } from '../../constants/schema';
 
 class OrderDetailDto {
+  @ApiPropertyOptional({ example: 1 })
+  @IsInt()
+  @IsOptional()
+  id: number;
+
   @ApiProperty({ example: 1 })
   @Min(ORDER_DETAIL_SCHEMA.QUANTITY.MIN)
   @IsInt()
@@ -43,28 +47,17 @@ class OrderDetailDto {
   dishId: number;
 }
 
-export class CreateOrderRequestDto {
-  @ApiProperty({ example: 0 })
-  @IsEnum(OrderTypeEnum)
+export class UpdateOrderRequestDto {
+  @ApiProperty({ example: 1 })
+  @IsInt()
   @IsNotEmpty()
-  type: OrderTypeEnum;
-
-  @ApiProperty({ example: 0 })
-  @IsEnum(OrderStatusEnum)
-  @IsNotEmpty()
-  status: OrderStatusEnum;
+  id: number;
 
   @ApiPropertyOptional({ example: 'dat ban 10 nguoi' })
   @MaxLength(ORDER_SCHEMA.NOTE.LENGTH)
   @IsString()
   @IsOptional()
   note: string;
-
-  @ValidateIf((object) => object.type === OrderTypeEnum.IN_HERE)
-  @ApiProperty({ example: 1 })
-  @IsInt()
-  @IsNotEmpty()
-  tableId: number;
 
   @ApiProperty({ example: '0123456789' })
   @Matches(COMMON_SCHEMA.PHONE_NUMBER.REGEX)
@@ -79,14 +72,6 @@ export class CreateOrderRequestDto {
   @IsString()
   @IsOptional()
   customerName: string;
-
-  @ValidateIf((object) => object.type === OrderTypeEnum.BRING_BACK)
-  @ApiProperty({ example: 'H10' })
-  @MaxLength(ORDER_SCHEMA.WAITING_TICKET.LENGTH)
-  @Transform(({ value }) => value?.trim())
-  @IsString()
-  @IsNotEmpty()
-  waitingTicket: string;
 
   @ApiProperty({ type: OrderDetailDto, isArray: true })
   @ValidateNested({ each: true })

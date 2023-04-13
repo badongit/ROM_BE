@@ -11,12 +11,19 @@ import { Customer } from '../customer/entities/customer.entity';
 import { DishRepository } from '@src/repositories/dish.repository';
 import { Dish } from '../dish/entities/dish.entity';
 import { Table } from '../table/entities/table.entity';
+import { OrderDetailRepository } from '@src/repositories/order-detail.repository';
+import { OrderDetail } from './entities/order-details.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, Customer, Table, Dish])],
+  imports: [
+    TypeOrmModule.forFeature([Order, Customer, Table, Dish, OrderDetail]),
+  ],
   providers: [
     OrderGateway,
-    OrderService,
+    {
+      provide: 'IOrderService',
+      useClass: OrderService,
+    },
     {
       provide: 'IOrderRepository',
       useClass: OrderRepository,
@@ -33,11 +40,23 @@ import { Table } from '../table/entities/table.entity';
       provide: 'IDishRepository',
       useClass: DishRepository,
     },
+    {
+      provide: 'IOrderDetailRepository',
+      useClass: OrderDetailRepository,
+    },
   ],
   exports: [
     {
       provide: 'IOrderRepository',
       useClass: OrderRepository,
+    },
+    {
+      provide: 'IOrderDetailRepository',
+      useClass: OrderDetailRepository,
+    },
+    {
+      provide: 'IOrderService',
+      useClass: OrderService,
     },
   ],
 })

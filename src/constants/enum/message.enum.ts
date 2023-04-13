@@ -7,6 +7,7 @@ export enum MessageEnum {
   FILE_SIZE_EXCEEDED_ALLOW = 'Kích thước file quá lớn',
   FILE_TYPE_NOT_ALLOW = 'Loại file không hợp lệ',
   ACCOUNT_DISABLED = 'Tài khoản đã bị vô hiệu hóa',
+  ERROR_HAPPENED = 'Đã xảy ra lỗi',
 
   // not found
   FLOOR_NOT_FOUND = 'Dữ liệu Tầng không tồn tại',
