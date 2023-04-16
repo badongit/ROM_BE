@@ -17,14 +17,14 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   imports: [
     TypeOrmModule.forFeature([Employee]),
     PassportModule,
-    CacheModule.register({
-      store: redisStore,
-      host: REDIS_CONSTANT.HOST,
-      port: REDIS_CONSTANT.PORT,
-      auth_pass: REDIS_CONSTANT.PASS,
-      ttl: JWT_CONSTANT.REFRESH_TOKEN_EXPIRES_IN,
-      isGlobal: true,
-    }),
+    // CacheModule.register({
+    //   store: redisStore,
+    //   host: REDIS_CONSTANT.HOST,
+    //   port: REDIS_CONSTANT.PORT,
+    //   auth_pass: REDIS_CONSTANT.PASS,
+    //   ttl: JWT_CONSTANT.REFRESH_TOKEN_EXPIRES_IN,
+    //   isGlobal: true,
+    // }),
     JwtModule.register({ secret: JWT_CONSTANT.ACCESS_TOKEN_SECRET }),
   ],
   controllers: [AuthenticationController],

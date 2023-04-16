@@ -8,7 +8,7 @@ import { ICustomerRepository } from '@src/components/customer/interfaces/custome
 import { SortEnum } from '@src/constants/enum/sort.enum';
 import { BaseRepository } from '@src/core/repositories/base.repository';
 import { isEmpty } from 'class-validator';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Like, Repository } from 'typeorm';
 
 export class CustomerRepository
   extends BaseRepository<Customer>
@@ -40,9 +40,13 @@ export class CustomerRepository
   list(
     request: ListCustomerQueryDto,
   ): Promise<[CustomerResponseDto[], number]> {
-    const { sort, take, skip } = request;
+    const { sort, take, skip, phoneNumber } = request;
     const sortObj: any = {};
-    const conditions: any = {};
+    const conditions: FindOptionsWhere<Customer> = {};
+
+    if (phoneNumber) {
+      conditions.phoneNumber = Like(phoneNumber);
+    }
 
     if (isEmpty(sort)) {
       sortObj.createdAt = SortEnum.DESC;

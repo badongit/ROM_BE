@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch } from '@nestjs/common';
 import { BaseWsExceptionFilter } from '@nestjs/websockets/exceptions';
-import { OrderEventEnum } from '@src/components/order/constants/event.enum';
+import { SocketEventEnum } from '@src/components/order/constants/event.enum';
 
 @Catch()
 export class WsExceptionFilter extends BaseWsExceptionFilter {
@@ -9,7 +9,7 @@ export class WsExceptionFilter extends BaseWsExceptionFilter {
 
     if (exception) {
       socket.emit(
-        OrderEventEnum.ERROR,
+        SocketEventEnum.ERROR,
         exception.error || exception.message || exception,
       );
     }

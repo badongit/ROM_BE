@@ -26,10 +26,9 @@ export class AuthenticationService implements IAuthenticationService {
 
     @Inject('IEmployeeRepository')
     private readonly employeeRepository: IEmployeeRepository,
-
-    @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,
-  ) {}
+  ) // @Inject(CACHE_MANAGER)
+  // private readonly cacheManager: Cache,
+  {}
 
   async login(
     request: LoginRequestDto,
@@ -59,7 +58,7 @@ export class AuthenticationService implements IAuthenticationService {
     const accessToken = this._createToken(user.id, user.role.code);
     const refreshToken = this._createRefreshToken(user.id);
 
-    await this.cacheManager.set(user.id.toString(), refreshToken);
+    // await this.cacheManager.set(user.id.toString(), refreshToken);
     const userReturn = plainToClass(DetailEmployeeResponseDto, user, {
       excludeExtraneousValues: true,
     });
@@ -78,13 +77,13 @@ export class AuthenticationService implements IAuthenticationService {
 
     const decoded = this._decodeRefreshToken(refreshToken);
 
-    const check = await this.cacheManager.get(decoded.id.toString());
+    // const check = await this.cacheManager.get(decoded.id.toString());
 
     const user = await this.employeeRepository.findOne({
       where: { id: decoded.id },
     });
 
-    if (!check || !user) {
+    if (!user) {
       return new ApiError(
         ResponseCodeEnum.BAD_REQUEST,
         MessageEnum.UNAUTHORIZED,

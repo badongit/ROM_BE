@@ -58,6 +58,9 @@ export class FloorRepository
 
     if (isGetTables) {
       findOptions.relations = { tables: true };
+      findOptions.order.tables = {
+        code: 'ASC',
+      };
     }
 
     return this.findAndCount(findOptions);

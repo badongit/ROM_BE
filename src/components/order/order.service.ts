@@ -7,7 +7,7 @@ import { ApiError } from '@src/utils/api-error';
 import { ResponseBuilder } from '@src/utils/response-builder';
 import { plainToClass } from 'class-transformer';
 import { isEmpty, map, uniq } from 'lodash';
-import { DataSource, FindOptionsWhere, In, Not } from 'typeorm';
+import { DataSource, FindOptionsWhere, In, Like, Not } from 'typeorm';
 import { CreateCustomerBodyDto } from '../customer/dto/request/create-customer.body.dto';
 import { Customer } from '../customer/entities/customer.entity';
 import { ICustomerRepository } from '../customer/interfaces/customer.repository.interface';
@@ -22,6 +22,10 @@ import { Order } from './entities/order.entity';
 import { IOrderDetailRepository } from './interfaces/order-detail.repository.interface';
 import { IOrderRepository } from './interfaces/order.repository.interface';
 import { IOrderService } from './interfaces/order.service.interface';
+import { ListOrderQueryDto } from './dto/request/list-order.query.dto';
+import { TableStatusEnum } from '../table/constants/status.enum';
+import { OrderStatusEnum, OrderTypeEnum } from './constants/enums';
+import { Table } from '../table/entities/table.entity';
 @Injectable()
 export class OrderService implements IOrderService {
   constructor(
@@ -39,22 +43,61 @@ export class OrderService implements IOrderService {
 
     @Inject('ICustomerRepository')
     private readonly customerRepository: ICustomerRepository,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(
     request: CreateOrderRequestDto,
-  ): Promise<ResponsePayload<DetailOrderResponseDto>> {
+  ): Promise<ResponsePayload<DetailOrderResponseDto | any>> {
     const [responseError, , customer] = await this.validateBeforeSave(request);
 
     if (responseError) {
       return responseError;
     }
 
+    const { tableId, status } = request;
+
     const orderEntity = await this.orderRepository.createEntity(request);
     if (customer) {
       orderEntity.customer = customer;
     }
-    const order = await this.orderRepository.save(orderEntity);
+
+    let order: Order = null;
+    let error: Error = null;
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      order = await queryRunner.manager.save(orderEntity);
+      if (tableId) {
+        await queryRunner.manager.update(
+          Table,
+          { id: tableId },
+          {
+            status:
+              status === OrderStatusEnum.WAIT_CONFIRM
+                ? TableStatusEnum.RESERVED
+                : TableStatusEnum.SERVING,
+          },
+        );
+      }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      error = error;
+    } finally {
+      await queryRunner.release();
+    }
+
+    if (error) {
+      return new ResponseBuilder()
+        .withCode(ResponseCodeEnum.BAD_REQUEST)
+        .withMessage(MessageEnum.ERROR_HAPPENED)
+        .build();
+    }
 
     const dataReturn = plainToClass(DetailOrderResponseDto, order, {
       excludeExtraneousValues: true,
@@ -102,22 +145,22 @@ export class OrderService implements IOrderService {
 
     let order: Order = null;
     let error: Error = null;
-    const queryRunner = AppDataSource.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      await queryRunner.manager.delete(OrderDetail, orderDetails);
-      order = await queryRunner.manager.save(orderEntity);
+      await queryRunner.manager.remove(OrderDetail, orderDetails);
+
+      order = await queryRunner.manager.save<Order>(orderEntity);
 
       await queryRunner.commitTransaction();
-    } catch (error) {
+    } catch (err) {
       await queryRunner.rollbackTransaction();
-      error = error;
+      error = err;
     } finally {
       await queryRunner.release();
     }
-
     if (error) {
       return new ResponseBuilder()
         .withCode(ResponseCodeEnum.BAD_REQUEST)
@@ -132,7 +175,7 @@ export class OrderService implements IOrderService {
     return new ResponseBuilder(dataReturn).build();
   }
 
-  async validateBeforeSave(
+  private async validateBeforeSave(
     request: any,
   ): Promise<[ResponsePayload<any>, Order, Customer]> {
     const { id, customerPhoneNumber, customerName, tableId, details } = request;
@@ -157,7 +200,7 @@ export class OrderService implements IOrderService {
 
     if (customerPhoneNumber) {
       customer = await this.customerRepository.findOne({
-        where: { phoneNumber: customerPhoneNumber },
+        where: { phoneNumber: Like(customerPhoneNumber) },
       });
 
       if (!customer && customerName) {
@@ -179,6 +222,17 @@ export class OrderService implements IOrderService {
           order,
           customer,
         ];
+
+      if (table.status !== TableStatusEnum.EMPTY) {
+        return [
+          new ApiError(
+            ResponseCodeEnum.BAD_REQUEST,
+            MessageEnum.TABLE_STATUS_INVALID,
+          ).toResponse(),
+          order,
+          customer,
+        ];
+      }
     }
 
     if (!isEmpty(details)) {
@@ -200,5 +254,20 @@ export class OrderService implements IOrderService {
     }
 
     return [null, order, customer];
+  }
+
+  async list(
+    request: ListOrderQueryDto,
+  ): Promise<ResponsePayload<DetailOrderResponseDto>> {
+    const [orders, count] = await this.orderRepository.list(request);
+
+    const dataReturn = plainToClass(DetailOrderResponseDto, orders, {
+      excludeExtraneousValues: true,
+    });
+
+    return new ResponseBuilder({
+      items: dataReturn,
+      meta: { page: request.page, total: count },
+    }).build();
   }
 }

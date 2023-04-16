@@ -25,4 +25,5 @@ export enum MessageEnum {
 
   // invalid
   STATUS_INVALID = 'Trạng thái không hợp lệ',
+  TABLE_STATUS_INVALID = 'Bàn đang được sử dụng',
 }

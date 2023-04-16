@@ -6,13 +6,16 @@ import {
   OrderStatusEnum,
 } from '@src/components/order/constants/enums';
 import { CreateOrderRequestDto } from '@src/components/order/dto/request/create-order.request.dto';
+import { ListOrderQueryDto } from '@src/components/order/dto/request/list-order.query.dto';
 import { UpdateOrderRequestDto } from '@src/components/order/dto/request/update-order.request.dto';
 import { OrderDetail } from '@src/components/order/entities/order-details.entity';
 import { Order } from '@src/components/order/entities/order.entity';
 import { IOrderRepository } from '@src/components/order/interfaces/order.repository.interface';
+import { SortEnum } from '@src/constants/enum/sort.enum';
 import { BaseRepository } from '@src/core/repositories/base.repository';
 import { formatDateToOrderCode } from '@src/utils/common';
-import { Repository } from 'typeorm';
+import { isEmpty } from 'lodash';
+import { FindManyOptions, In, Repository } from 'typeorm';
 
 @Injectable()
 export class OrderRepository
@@ -29,6 +32,7 @@ export class OrderRepository
   createEntity(request: CreateOrderRequestDto): Order {
     const { type, status, note, tableId, customerId, waitingTicket, details } =
       request;
+    const createdAt = new Date();
     const orderEntity = new Order();
     orderEntity.code = PREFIX_ORDER_CODE + formatDateToOrderCode();
     orderEntity.type = type;
@@ -37,6 +41,7 @@ export class OrderRepository
     orderEntity.tableId = tableId;
     orderEntity.customerId = customerId;
     orderEntity.waitingTicket = waitingTicket;
+    orderEntity.createdAt = createdAt;
     orderEntity.details = details.map((detail) => {
       const { quantity, price, note, dishId } = detail;
       const detailEntity = new OrderDetail();
@@ -45,6 +50,7 @@ export class OrderRepository
       detailEntity.note = note;
       detailEntity.dishId = dishId;
       detailEntity.status = OrderDetailStatusEnum.WAIT_CONFIRM;
+      detailEntity.createdAt = createdAt;
       return detailEntity;
     });
 
@@ -53,22 +59,67 @@ export class OrderRepository
 
   updateEntity(entity: Order, request: UpdateOrderRequestDto): Order {
     const { note, customerId, details } = request;
+    const createdAt = new Date();
     entity.note = note;
     entity.customerId = customerId;
     entity.details = details.map((detail) => {
       const { quantity, price, note, dishId, id } = detail;
       const detailEntity = new OrderDetail();
-      detailEntity.id = id;
       detailEntity.quantity = quantity;
       detailEntity.price = price;
       detailEntity.note = note;
       detailEntity.dishId = dishId;
-      if (!id) {
+      if (id) {
+        detailEntity.id = id;
+      } else {
         detailEntity.status = OrderDetailStatusEnum.WAIT_CONFIRM;
+        detailEntity.createdAt = createdAt;
       }
       return detailEntity;
     });
 
     return entity;
+  }
+
+  list(request: ListOrderQueryDto): Promise<[Order[], number]> {
+    const { sort, take, skip, isGetAll, isGetDetails, status } = request;
+    const sortObj: any = {};
+
+    if (isEmpty(sort)) {
+      sortObj.createdAt = SortEnum.DESC;
+    } else {
+      sort.forEach((item) => {
+        switch (item.column) {
+          case 'name':
+          case 'paymentReality':
+          case 'createdAt':
+            sortObj[item.column] = item.order;
+            break;
+        }
+      });
+    }
+
+    const findOptions: FindManyOptions<Order> & { isGetAll: number } = {
+      order: sortObj,
+      take: take,
+      skip: skip,
+      isGetAll,
+    };
+
+    if (isGetDetails) {
+      findOptions.relations = { details: true, customer: true };
+      findOptions.order.details = {
+        createdAt: 'ASC',
+      };
+    }
+
+    if (!isEmpty(status)) {
+      findOptions.where = {
+        ...findOptions.where,
+        status: In(status),
+      };
+    }
+
+    return this.findAndCount(findOptions);
   }
 }

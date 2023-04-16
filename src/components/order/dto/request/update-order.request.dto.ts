@@ -4,7 +4,6 @@ import { COMMON_SCHEMA } from '@src/constants/common';
 import { Transform, Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
-  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -12,7 +11,6 @@ import {
   Matches,
   MaxLength,
   Min,
-  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { ORDER_DETAIL_SCHEMA, ORDER_SCHEMA } from '../../constants/schema';

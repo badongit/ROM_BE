@@ -13,11 +13,13 @@ import { Dish } from '../dish/entities/dish.entity';
 import { Table } from '../table/entities/table.entity';
 import { OrderDetailRepository } from '@src/repositories/order-detail.repository';
 import { OrderDetail } from './entities/order-details.entity';
+import { OrderController } from './order.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Order, Customer, Table, Dish, OrderDetail]),
   ],
+  controllers: [OrderController],
   providers: [
     OrderGateway,
     {
