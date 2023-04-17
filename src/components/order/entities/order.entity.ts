@@ -45,7 +45,9 @@ export class Order extends BaseEntity {
   @Column()
   waitingTicket: string;
 
-  @ManyToOne(() => Table, (table) => table.orders)
+  @ManyToOne(() => Table, (table) => table.orders, {
+    cascade: ['update'],
+  })
   @JoinColumn({
     name: 'table_id',
     referencedColumnName: 'id',

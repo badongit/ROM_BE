@@ -4,6 +4,7 @@ import { OrderResponseDto } from '../dto/response/order.response.dto';
 import { ListOrderQueryDto } from '../dto/request/list-order.query.dto';
 import { DetailOrderResponseDto } from '../dto/response/detail-order.response.dto';
 import { UpdateOrderRequestDto } from '../dto/request/update-order.request.dto';
+import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
 
 export interface IOrderService {
   create(
@@ -15,4 +16,11 @@ export interface IOrderService {
   list(
     request: ListOrderQueryDto,
   ): Promise<ResponsePayload<DetailOrderResponseDto>>;
+
+  confirmOrder(
+    request: IdParamsDto,
+  ): Promise<ResponsePayload<DetailOrderResponseDto | any>>;
+  cancelOrder(
+    request: IdParamsDto,
+  ): Promise<ResponsePayload<DetailOrderResponseDto | any>>;
 }

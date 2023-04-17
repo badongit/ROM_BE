@@ -26,6 +26,7 @@ import { ListOrderQueryDto } from './dto/request/list-order.query.dto';
 import { TableStatusEnum } from '../table/constants/status.enum';
 import { OrderStatusEnum, OrderTypeEnum } from './constants/enums';
 import { Table } from '../table/entities/table.entity';
+import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
 @Injectable()
 export class OrderService implements IOrderService {
   constructor(
@@ -175,6 +176,88 @@ export class OrderService implements IOrderService {
     return new ResponseBuilder(dataReturn).build();
   }
 
+  async list(
+    request: ListOrderQueryDto,
+  ): Promise<ResponsePayload<DetailOrderResponseDto>> {
+    const [orders, count] = await this.orderRepository.list(request);
+
+    const dataReturn = plainToClass(DetailOrderResponseDto, orders, {
+      excludeExtraneousValues: true,
+    });
+
+    return new ResponseBuilder({
+      items: dataReturn,
+      meta: { page: request.page, total: count },
+    }).build();
+  }
+
+  async confirmOrder(
+    request: IdParamsDto,
+  ): Promise<ResponsePayload<DetailOrderResponseDto | any>> {
+    const [responseError, orderExisted] = await this.validateBeforeSave(
+      request,
+    );
+
+    if (responseError) {
+      return responseError;
+    }
+
+    const confirmStatus = OrderStatusEnum.IN_PROGRESS;
+
+    if (!this.validateOrderStatus(orderExisted.status, confirmStatus)) {
+      return new ApiError(
+        ResponseCodeEnum.BAD_REQUEST,
+        MessageEnum.STATUS_INVALID,
+      ).toResponse();
+    }
+
+    orderExisted.status = confirmStatus;
+    if (orderExisted.table) {
+      orderExisted.table.status = TableStatusEnum.SERVING;
+    }
+    const order = await this.orderRepository.save(orderExisted);
+
+    const dataReturn = plainToClass(DetailOrderResponseDto, order, {
+      excludeExtraneousValues: true,
+    });
+
+    return new ResponseBuilder(dataReturn).build();
+  }
+
+  async cancelOrder(
+    request: IdParamsDto,
+  ): Promise<ResponsePayload<DetailOrderResponseDto | any>> {
+    const [responseError, orderExisted] = await this.validateBeforeSave(
+      request,
+    );
+
+    if (responseError) {
+      return responseError;
+    }
+
+    const cancelStatus = OrderStatusEnum.CANCEL;
+
+    if (!this.validateOrderStatus(orderExisted.status, cancelStatus)) {
+      return new ApiError(
+        ResponseCodeEnum.BAD_REQUEST,
+        MessageEnum.STATUS_INVALID,
+      ).toResponse();
+    }
+
+    orderExisted.status = cancelStatus;
+    if (orderExisted.table) {
+      orderExisted.table.status = TableStatusEnum.EMPTY;
+    }
+
+    const order = await this.orderRepository.save(orderExisted);
+
+    const dataReturn = plainToClass(DetailOrderResponseDto, order, {
+      excludeExtraneousValues: true,
+    });
+
+    return new ResponseBuilder(dataReturn).build();
+  }
+
   private async validateBeforeSave(
     request: any,
   ): Promise<[ResponsePayload<any>, Order, Customer]> {
@@ -185,6 +268,16 @@ export class OrderService implements IOrderService {
     if (id) {
       order = await this.orderRepository.findOne({
         where: { id },
+        order: {
+          details: {
+            createdAt: 'ASC',
+          },
+        },
+        relations: {
+          details: true,
+          customer: true,
+          table: true,
+        },
       });
 
       if (!order)
@@ -256,18 +349,21 @@ export class OrderService implements IOrderService {
     return [null, order, customer];
   }
 
-  async list(
-    request: ListOrderQueryDto,
-  ): Promise<ResponsePayload<DetailOrderResponseDto>> {
-    const [orders, count] = await this.orderRepository.list(request);
-
-    const dataReturn = plainToClass(DetailOrderResponseDto, orders, {
-      excludeExtraneousValues: true,
-    });
-
-    return new ResponseBuilder({
-      items: dataReturn,
-      meta: { page: request.page, total: count },
-    }).build();
+  private validateOrderStatus(
+    oldStatus: OrderStatusEnum,
+    newStatus: OrderStatusEnum,
+  ): boolean {
+    switch (newStatus) {
+      case OrderStatusEnum.WAIT_CONFIRM:
+        return false;
+      case OrderStatusEnum.IN_PROGRESS:
+        return oldStatus === OrderStatusEnum.WAIT_CONFIRM;
+      case OrderStatusEnum.COMPLETED:
+        return oldStatus === OrderStatusEnum.IN_PROGRESS;
+      case OrderStatusEnum.CANCEL:
+        return oldStatus === OrderStatusEnum.WAIT_CONFIRM;
+      default:
+        return false;
+    }
   }
 }
