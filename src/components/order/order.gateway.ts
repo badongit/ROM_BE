@@ -17,6 +17,9 @@ import { TableResponseDto } from '../table/dto/response/table.response.dto';
 import { from, map } from 'rxjs';
 import { UpdateOrderRequestDto } from './dto/request/update-order.request.dto';
 import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
+import { IOrderRepository } from './interfaces/order.repository.interface';
+import { DetailOrderResponseDto } from './dto/response/detail-order.response.dto';
+import { MessageEnum } from '@src/constants/enum/message.enum';
 
 @WebSocketGateway({
   cors: {
@@ -30,6 +33,9 @@ export class OrderGateway {
     @Inject('IOrderService')
     private readonly orderService: IOrderService,
 
+    @Inject('IOrderRepository')
+    private readonly orderRepository: IOrderRepository,
+
     @Inject('ITableRepository')
     private readonly tableRepository: ITableRepository,
   ) {}
@@ -42,12 +48,19 @@ export class OrderGateway {
 
     if (SUCCESS_CODE.includes(response.statusCode)) {
       const socketResponse: any[] = [
-        { event: SocketEventEnum.SEND_ORDER, data: response.data },
         {
           event: SocketEventEnum.NOTIFICATION,
-          data: { message: 'Tạo thành công' },
+          data: { message: MessageEnum.CREATE_SUCCESS },
         },
       ];
+      const order = await this.orderRepository.detail(response.data.id);
+      const dataReturn = plainToClass(DetailOrderResponseDto, order, {
+        excludeExtraneousValues: true,
+      });
+      socketResponse.push({
+        event: SocketEventEnum.SEND_ORDER,
+        data: dataReturn,
+      });
 
       if (tableId) {
         const table = await this.tableRepository.findById(tableId);
@@ -71,12 +84,20 @@ export class OrderGateway {
 
     if (SUCCESS_CODE.includes(response.statusCode)) {
       const socketResponse: any[] = [
-        { event: SocketEventEnum.SEND_ORDER, data: response.data },
         {
           event: SocketEventEnum.NOTIFICATION,
-          data: { message: 'Cập nhật thành công' },
+          data: { message: MessageEnum.UPDATE_SUCCESS },
         },
       ];
+      const order = await this.orderRepository.detail(response.data.id);
+      const dataReturn = plainToClass(DetailOrderResponseDto, order, {
+        excludeExtraneousValues: true,
+      });
+      socketResponse.push({
+        event: SocketEventEnum.SEND_ORDER,
+        data: dataReturn,
+      });
+
       return from(socketResponse).pipe(map((data) => data));
     } else {
       return { event: SocketEventEnum.ERROR, data: response.message };
@@ -89,12 +110,20 @@ export class OrderGateway {
 
     if (SUCCESS_CODE.includes(response.statusCode)) {
       const socketResponse: any[] = [
-        { event: SocketEventEnum.SEND_ORDER, data: response.data },
         {
           event: SocketEventEnum.NOTIFICATION,
-          data: { message: 'Xác nhận thành công' },
+          data: { message: MessageEnum.CONFIRMED },
         },
       ];
+
+      const order = await this.orderRepository.detail(response.data.id);
+      const dataReturn = plainToClass(DetailOrderResponseDto, order, {
+        excludeExtraneousValues: true,
+      });
+      socketResponse.push({
+        event: SocketEventEnum.SEND_ORDER,
+        data: dataReturn,
+      });
 
       if (response.data.tableId) {
         const table = await this.tableRepository.findById(
@@ -121,12 +150,20 @@ export class OrderGateway {
 
     if (SUCCESS_CODE.includes(response.statusCode)) {
       const socketResponse: any[] = [
-        { event: SocketEventEnum.SEND_ORDER, data: response.data },
         {
           event: SocketEventEnum.NOTIFICATION,
-          data: { message: 'Hủy thành công' },
+          data: { message: MessageEnum.CANCELED },
         },
       ];
+
+      const order = await this.orderRepository.detail(response.data.id);
+      const dataReturn = plainToClass(DetailOrderResponseDto, order, {
+        excludeExtraneousValues: true,
+      });
+      socketResponse.push({
+        event: SocketEventEnum.SEND_ORDER,
+        data: dataReturn,
+      });
 
       if (response.data.tableId) {
         const table = await this.tableRepository.findById(

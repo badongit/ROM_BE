@@ -11,6 +11,7 @@ import {
   Matches,
   MaxLength,
   Min,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { ORDER_DETAIL_SCHEMA, ORDER_SCHEMA } from '../../constants/schema';
@@ -57,6 +58,7 @@ export class UpdateOrderRequestDto {
   @IsOptional()
   note: string;
 
+  @ValidateIf((obj) => obj.customerPhoneNumber?.trim() !== '')
   @ApiProperty({ example: '0123456789' })
   @Matches(COMMON_SCHEMA.PHONE_NUMBER.REGEX)
   @Transform(({ value }) => value?.trim())

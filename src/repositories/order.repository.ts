@@ -36,7 +36,7 @@ export class OrderRepository
     const orderEntity = new Order();
     orderEntity.code = PREFIX_ORDER_CODE + formatDateToOrderCode();
     orderEntity.type = type;
-    orderEntity.status = status || OrderStatusEnum.IN_PROGRESS;
+    orderEntity.status = status;
     orderEntity.note = note;
     orderEntity.tableId = tableId;
     orderEntity.customerId = customerId;
@@ -121,5 +121,20 @@ export class OrderRepository
     }
 
     return this.findAndCount(findOptions);
+  }
+
+  detail(id: number): Promise<Order> {
+    return this.findOne({
+      where: { id },
+      relations: {
+        customer: true,
+        details: true,
+      },
+      order: {
+        details: {
+          createdAt: 'ASC',
+        },
+      },
+    });
   }
 }

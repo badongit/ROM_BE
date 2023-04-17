@@ -9,7 +9,7 @@ import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
 export interface IOrderService {
   create(
     request: CreateOrderRequestDto,
-  ): Promise<ResponsePayload<OrderResponseDto>>;
+  ): Promise<ResponsePayload<DetailOrderResponseDto | any>>;
   update(
     request: UpdateOrderRequestDto,
   ): Promise<ResponsePayload<DetailOrderResponseDto | any>>;

@@ -8,4 +8,5 @@ export interface IOrderRepository extends BaseRepository<Order> {
   createEntity(request: CreateOrderRequestDto): Order;
   updateEntity(entity: Order, request: UpdateOrderRequestDto): Order;
   list(request: ListOrderQueryDto): Promise<[Order[], number]>;
+  detail(id: number): Promise<Order>;
 }

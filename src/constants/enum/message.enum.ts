@@ -26,4 +26,10 @@ export enum MessageEnum {
   // invalid
   STATUS_INVALID = 'Trạng thái không hợp lệ',
   TABLE_STATUS_INVALID = 'Bàn đang được sử dụng',
+
+  // socket
+  CREATE_SUCCESS = 'Tạo thành công',
+  UPDATE_SUCCESS = 'Cập nhật thành công',
+  CONFIRMED = 'Đã xác nhận',
+  CANCELED = 'Đã hủy',
 }
