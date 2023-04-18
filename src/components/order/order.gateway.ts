@@ -3,23 +3,23 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer,
 } from '@nestjs/websockets';
 import { SUCCESS_CODE } from '@src/constants/common';
+import { MessageEnum } from '@src/constants/enum/message.enum';
+import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
 import { WsExceptionFilter } from '@src/core/filters/ws-exception.filter';
 import { CustomValidationPipe } from '@src/core/pipes/validation.pipe';
-import { SocketEventEnum } from './constants/event.enum';
-import { CreateOrderRequestDto } from './dto/request/create-order.request.dto';
-import { IOrderService } from './interfaces/order.service.interface';
-import { ITableRepository } from '../table/interfaces/table.repository.interface';
 import { plainToClass } from 'class-transformer';
-import { TableResponseDto } from '../table/dto/response/table.response.dto';
 import { from, map } from 'rxjs';
+import { TableResponseDto } from '../table/dto/response/table.response.dto';
+import { ITableRepository } from '../table/interfaces/table.repository.interface';
+import { SocketEventEnum } from './constants/event.enum';
+import { ChangeStatusOrderDetailRequestDto } from './dto/request/change-status-order-detail.request.dto';
+import { CreateOrderRequestDto } from './dto/request/create-order.request.dto';
 import { UpdateOrderRequestDto } from './dto/request/update-order.request.dto';
-import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
-import { IOrderRepository } from './interfaces/order.repository.interface';
 import { DetailOrderResponseDto } from './dto/response/detail-order.response.dto';
-import { MessageEnum } from '@src/constants/enum/message.enum';
+import { IOrderRepository } from './interfaces/order.repository.interface';
+import { IOrderService } from './interfaces/order.service.interface';
 
 @WebSocketGateway({
   cors: {
@@ -105,7 +105,7 @@ export class OrderGateway {
   }
 
   @SubscribeMessage(SocketEventEnum.CONFIRM_ORDER)
-  async confirm(@MessageBody() request: IdParamsDto): Promise<any> {
+  async confirmOrder(@MessageBody() request: IdParamsDto): Promise<any> {
     const response = await this.orderService.confirmOrder(request);
 
     if (SUCCESS_CODE.includes(response.statusCode)) {
@@ -145,7 +145,7 @@ export class OrderGateway {
   }
 
   @SubscribeMessage(SocketEventEnum.CANCEL_ORDER)
-  async cancel(@MessageBody() request: IdParamsDto): Promise<any> {
+  async cancelOrder(@MessageBody() request: IdParamsDto): Promise<any> {
     const response = await this.orderService.cancelOrder(request);
 
     if (SUCCESS_CODE.includes(response.statusCode)) {
@@ -178,6 +178,36 @@ export class OrderGateway {
           data: tableReturn,
         });
       }
+      return from(socketResponse).pipe(map((data) => data));
+    } else {
+      return { event: SocketEventEnum.ERROR, data: response.message };
+    }
+  }
+
+  @SubscribeMessage(SocketEventEnum.CHANGE_STATUS_ORDER_DETAIL)
+  async changeStatusOrderDetail(
+    @MessageBody() request: ChangeStatusOrderDetailRequestDto,
+  ): Promise<any> {
+    const response = await this.orderService.changeStatusOrderDetail(request);
+    const messageByStatus = [
+      '',
+      MessageEnum.CONFIRMED,
+      MessageEnum.COMPLETED,
+      MessageEnum.CANCELED,
+    ];
+
+    if (SUCCESS_CODE.includes(response.statusCode)) {
+      const socketResponse: any[] = [
+        {
+          event: SocketEventEnum.SEND_ORDER_DETAIL,
+          data: response.data,
+        },
+        {
+          event: SocketEventEnum.NOTIFICATION,
+          data: { message: messageByStatus[request.status] },
+        },
+      ];
+
       return from(socketResponse).pipe(map((data) => data));
     } else {
       return { event: SocketEventEnum.ERROR, data: response.message };

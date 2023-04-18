@@ -17,6 +17,7 @@ export enum MessageEnum {
   CUSTOMER_NOT_FOUND = 'Dữ liệu Khách hàng không tồn tại',
   EMPLOYEE_NOT_FOUND = 'Dữ liệu Nhân viên không tồn tại',
   ORDER_NOT_FOUND = 'Dữ liệu Đơn hàng không tồn tại',
+  ORDER_DETAIL_NOT_FOUND = 'Chi tiết đơn hàng không tồn tại',
 
   // existed
   CODE_EXISTED = 'Mã đã tồn tại',
@@ -32,4 +33,5 @@ export enum MessageEnum {
   UPDATE_SUCCESS = 'Cập nhật thành công',
   CONFIRMED = 'Đã xác nhận',
   CANCELED = 'Đã hủy',
+  COMPLETED = 'Đã hoàn thành',
 }

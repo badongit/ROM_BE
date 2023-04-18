@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import AppDataSource from '@src/configs/database.config';
 import { MessageEnum } from '@src/constants/enum/message.enum';
 import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
+import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
 import { ResponsePayload } from '@src/core/interfaces/response-payload';
 import { ApiError } from '@src/utils/api-error';
 import { ResponseBuilder } from '@src/utils/response-builder';
@@ -12,21 +12,21 @@ import { CreateCustomerBodyDto } from '../customer/dto/request/create-customer.b
 import { Customer } from '../customer/entities/customer.entity';
 import { ICustomerRepository } from '../customer/interfaces/customer.repository.interface';
 import { IDishRepository } from '../dish/interfaces/dish.repository.interface';
+import { TableStatusEnum } from '../table/constants/status.enum';
+import { Table } from '../table/entities/table.entity';
 import { ITableRepository } from '../table/interfaces/table.repository.interface';
+import { OrderDetailStatusEnum, OrderStatusEnum } from './constants/enums';
+import { ChangeStatusOrderDetailRequestDto } from './dto/request/change-status-order-detail.request.dto';
 import { CreateOrderRequestDto } from './dto/request/create-order.request.dto';
+import { ListOrderQueryDto } from './dto/request/list-order.query.dto';
 import { UpdateOrderRequestDto } from './dto/request/update-order.request.dto';
 import { DetailOrderResponseDto } from './dto/response/detail-order.response.dto';
-import { OrderResponseDto } from './dto/response/order.response.dto';
+import { OrderDetailResponseDto } from './dto/response/order-detail.response.dto';
 import { OrderDetail } from './entities/order-details.entity';
 import { Order } from './entities/order.entity';
 import { IOrderDetailRepository } from './interfaces/order-detail.repository.interface';
 import { IOrderRepository } from './interfaces/order.repository.interface';
 import { IOrderService } from './interfaces/order.service.interface';
-import { ListOrderQueryDto } from './dto/request/list-order.query.dto';
-import { TableStatusEnum } from '../table/constants/status.enum';
-import { OrderStatusEnum, OrderTypeEnum } from './constants/enums';
-import { Table } from '../table/entities/table.entity';
-import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
 @Injectable()
 export class OrderService implements IOrderService {
   constructor(
@@ -258,6 +258,40 @@ export class OrderService implements IOrderService {
     return new ResponseBuilder(dataReturn).build();
   }
 
+  async changeStatusOrderDetail(
+    request: ChangeStatusOrderDetailRequestDto,
+  ): Promise<ResponsePayload<OrderDetailResponseDto | any>> {
+    const orderDetailExisted = await this.orderDetailRepository.findById(
+      request.id,
+    );
+
+    if (!orderDetailExisted) {
+      return new ApiError(
+        ResponseCodeEnum.NOT_FOUND,
+        MessageEnum.ORDER_DETAIL_NOT_FOUND,
+      ).toResponse();
+    }
+
+    if (
+      !this.validateOrderDetailStatus(orderDetailExisted.status, request.status)
+    ) {
+      return new ApiError(
+        ResponseCodeEnum.BAD_REQUEST,
+        MessageEnum.STATUS_INVALID,
+      ).toResponse();
+    }
+
+    orderDetailExisted.status = request.status;
+    const orderDetail = await this.orderDetailRepository.save(
+      orderDetailExisted,
+    );
+
+    const dataReturn = plainToClass(OrderDetailResponseDto, orderDetail, {
+      excludeExtraneousValues: true,
+    });
+    return new ResponseBuilder(dataReturn).build();
+  }
+
   private async validateBeforeSave(
     request: any,
   ): Promise<[ResponsePayload<any>, Order, Customer]> {
@@ -362,6 +396,24 @@ export class OrderService implements IOrderService {
         return oldStatus === OrderStatusEnum.IN_PROGRESS;
       case OrderStatusEnum.CANCEL:
         return oldStatus === OrderStatusEnum.WAIT_CONFIRM;
+      default:
+        return false;
+    }
+  }
+
+  private validateOrderDetailStatus(
+    oldStatus: OrderDetailStatusEnum,
+    newStatus: OrderDetailStatusEnum,
+  ): boolean {
+    switch (newStatus) {
+      case OrderDetailStatusEnum.WAIT_CONFIRM:
+        return false;
+      case OrderDetailStatusEnum.IN_PROGRESS:
+        return oldStatus === OrderDetailStatusEnum.WAIT_CONFIRM;
+      case OrderDetailStatusEnum.COMPLETED:
+        return oldStatus === OrderDetailStatusEnum.IN_PROGRESS;
+      case OrderDetailStatusEnum.CANCEL:
+        return oldStatus === OrderDetailStatusEnum.WAIT_CONFIRM;
       default:
         return false;
     }
