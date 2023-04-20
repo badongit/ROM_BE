@@ -8,6 +8,7 @@ export enum MessageEnum {
   FILE_TYPE_NOT_ALLOW = 'Loại file không hợp lệ',
   ACCOUNT_DISABLED = 'Tài khoản đã bị vô hiệu hóa',
   ERROR_HAPPENED = 'Đã xảy ra lỗi',
+  POINT_NOT_ENOUGH = 'Không đủ điểm',
 
   // not found
   FLOOR_NOT_FOUND = 'Dữ liệu Tầng không tồn tại',
@@ -27,6 +28,7 @@ export enum MessageEnum {
   // invalid
   STATUS_INVALID = 'Trạng thái không hợp lệ',
   TABLE_STATUS_INVALID = 'Bàn đang được sử dụng',
+  ROLE_INVALID = 'Vai trò không hợp lệ',
 
   // socket
   CREATE_SUCCESS = 'Tạo thành công',

@@ -5,6 +5,12 @@ export const ORDER_SCHEMA = {
   WAITING_TICKET: {
     LENGTH: 3,
   },
+  PAYMENT_REALITY: {
+    MIN: 0,
+  },
+  POINT_USED: {
+    MIN: 0,
+  },
 };
 
 export const ORDER_DETAIL_SCHEMA = {

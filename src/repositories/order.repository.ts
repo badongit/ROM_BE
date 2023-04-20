@@ -5,6 +5,7 @@ import {
   OrderDetailStatusEnum,
   OrderStatusEnum,
 } from '@src/components/order/constants/enums';
+import { CompleteOrderRequestDto } from '@src/components/order/dto/request/complete-order.request.dto';
 import { CreateOrderRequestDto } from '@src/components/order/dto/request/create-order.request.dto';
 import { ListOrderQueryDto } from '@src/components/order/dto/request/list-order.query.dto';
 import { UpdateOrderRequestDto } from '@src/components/order/dto/request/update-order.request.dto';
@@ -62,6 +63,7 @@ export class OrderRepository
     const createdAt = new Date();
     entity.note = note;
     entity.customerId = customerId;
+
     entity.details = details.map((detail) => {
       const { quantity, price, note, dishId, id } = detail;
       const detailEntity = new OrderDetail();
@@ -76,6 +78,23 @@ export class OrderRepository
         detailEntity.createdAt = createdAt;
       }
       return detailEntity;
+    });
+
+    return entity;
+  }
+
+  completeEntity(entity: Order, request: CompleteOrderRequestDto): Order {
+    const { note, customerId, paymentMethod, pointUsed } = request;
+    entity.note = note;
+    entity.customerId = customerId;
+    entity.paymentMethod = paymentMethod;
+    entity.pointUsed = pointUsed || 0;
+    entity.details = entity.details.map((detail) => {
+      if (detail.status === OrderDetailStatusEnum.WAIT_CONFIRM)
+        detail.status = OrderDetailStatusEnum.CANCEL;
+      if (detail.status === OrderDetailStatusEnum.IN_PROGRESS)
+        detail.status = OrderDetailStatusEnum.COMPLETED;
+      return detail;
     });
 
     return entity;

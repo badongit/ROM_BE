@@ -1,22 +1,27 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { MessageEnum } from '@src/constants/enum/message.enum';
 import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
+import { RoleEnum } from '@src/constants/enum/role.enum';
 import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
 import { ResponsePayload } from '@src/core/interfaces/response-payload';
 import { ApiError } from '@src/utils/api-error';
+import { amountToPoint, discountAmount } from '@src/utils/common';
 import { ResponseBuilder } from '@src/utils/response-builder';
 import { plainToClass } from 'class-transformer';
-import { isEmpty, map, uniq } from 'lodash';
+import { add, isEmpty, map, multiply, subtract, uniq } from 'lodash';
 import { DataSource, FindOptionsWhere, In, Like, Not } from 'typeorm';
 import { CreateCustomerBodyDto } from '../customer/dto/request/create-customer.body.dto';
 import { Customer } from '../customer/entities/customer.entity';
 import { ICustomerRepository } from '../customer/interfaces/customer.repository.interface';
 import { IDishRepository } from '../dish/interfaces/dish.repository.interface';
+import { IEmployeeRepository } from '../employee/interfaces/employee.repository.interface';
 import { TableStatusEnum } from '../table/constants/status.enum';
 import { Table } from '../table/entities/table.entity';
 import { ITableRepository } from '../table/interfaces/table.repository.interface';
+import { ROLE_ALLOW_COMPLETED_ORDER } from './constants';
 import { OrderDetailStatusEnum, OrderStatusEnum } from './constants/enums';
 import { ChangeStatusOrderDetailRequestDto } from './dto/request/change-status-order-detail.request.dto';
+import { CompleteOrderRequestDto } from './dto/request/complete-order.request.dto';
 import { CreateOrderRequestDto } from './dto/request/create-order.request.dto';
 import { ListOrderQueryDto } from './dto/request/list-order.query.dto';
 import { UpdateOrderRequestDto } from './dto/request/update-order.request.dto';
@@ -44,6 +49,9 @@ export class OrderService implements IOrderService {
 
     @Inject('ICustomerRepository')
     private readonly customerRepository: ICustomerRepository,
+
+    @Inject('IEmployeeRepository')
+    private readonly employeeRepository: IEmployeeRepository,
 
     private readonly dataSource: DataSource,
   ) {}
@@ -292,95 +300,173 @@ export class OrderService implements IOrderService {
     return new ResponseBuilder(dataReturn).build();
   }
 
+  async completeOrder(
+    request: CompleteOrderRequestDto,
+  ): Promise<ResponsePayload<DetailOrderResponseDto | any>> {
+    const { pointUsed } = request;
+    const [responseError, orderExisted, customer] =
+      await this.validateBeforeSave(request);
+
+    if (responseError) return responseError;
+
+    const completeStatus = OrderStatusEnum.COMPLETED;
+
+    if (!this.validateOrderStatus(orderExisted.status, completeStatus)) {
+      return new ApiError(
+        ResponseCodeEnum.BAD_REQUEST,
+        MessageEnum.STATUS_INVALID,
+      ).toResponse();
+    }
+
+    const order = this.orderRepository.completeEntity(orderExisted, request);
+
+    let amount = 0;
+    order.details.forEach((detail) => {
+      if (detail.status === OrderDetailStatusEnum.COMPLETED)
+        amount = add(amount, multiply(detail.quantity, detail.price));
+    });
+
+    const pointReceive = amountToPoint(amount);
+    const { amount: remainAmount, point: remainPoint } = discountAmount(
+      amount,
+      pointUsed ?? 0,
+    );
+
+    order.paymentReality = remainAmount;
+    // số điểm mới = số điểm cũ - (số điểm sử dụng - số điểm còn lại) + số điểm nhận được từ đơn hàng
+    customer.point = add(
+      subtract(customer.point, subtract(pointUsed, remainPoint)),
+      pointReceive,
+    );
+  }
+
   private async validateBeforeSave(
     request: any,
   ): Promise<[ResponsePayload<any>, Order, Customer]> {
-    const { id, customerPhoneNumber, customerName, tableId, details } = request;
     let order: Order = null;
     let customer: Customer = null;
 
-    if (id) {
-      order = await this.orderRepository.findOne({
-        where: { id },
-        order: {
-          details: {
-            createdAt: 'ASC',
-          },
-        },
-        relations: {
-          details: true,
-          customer: true,
-          table: true,
-        },
-      });
+    try {
+      const {
+        id,
+        customerPhoneNumber,
+        customerName,
+        tableId,
+        details,
+        cashierId,
+      } = request;
 
-      if (!order)
-        return [
-          new ApiError(
+      if (id) {
+        order = await this.orderRepository.findOne({
+          where: { id },
+          order: {
+            details: {
+              createdAt: 'ASC',
+            },
+          },
+          relations: {
+            details: true,
+            customer: true,
+            table: true,
+          },
+        });
+
+        if (!order)
+          throw new ApiError(
             ResponseCodeEnum.NOT_FOUND,
             MessageEnum.ORDER_NOT_FOUND,
-          ).toResponse(),
-          order,
-          customer,
-        ];
-    }
+          ).toResponse();
 
-    if (customerPhoneNumber) {
-      customer = await this.customerRepository.findOne({
-        where: { phoneNumber: Like(customerPhoneNumber) },
-      });
+        if (cashierId) {
+          const employee = await this.employeeRepository.findOne({
+            where: { id: cashierId },
+            relations: { role: true },
+          });
 
-      if (!customer && customerName) {
-        const request = new CreateCustomerBodyDto();
-        request.name = customerName;
-        request.phoneNumber = customerPhoneNumber;
-        customer = this.customerRepository.createEntity(request);
+          if (!employee) {
+            throw new ApiError(
+              ResponseCodeEnum.NOT_FOUND,
+              MessageEnum.EMPLOYEE_NOT_FOUND,
+            ).toResponse();
+          }
+
+          if (!ROLE_ALLOW_COMPLETED_ORDER.includes(employee.role.code)) {
+            throw new ApiError(
+              ResponseCodeEnum.BAD_REQUEST,
+              MessageEnum.ROLE_INVALID,
+            ).toResponse();
+          }
+
+          order.cashier = employee;
+        }
       }
-    }
 
-    if (tableId) {
-      const table = await this.tableRepository.findById(tableId);
-      if (!table)
-        return [
-          new ApiError(
-            ResponseCodeEnum.NOT_FOUND,
-            MessageEnum.TABLE_NOT_FOUND,
-          ).toResponse(),
-          order,
-          customer,
-        ];
+      if (customerPhoneNumber) {
+        customer = await this.customerRepository.findOne({
+          where: { phoneNumber: Like(customerPhoneNumber) },
+        });
 
-      if (table.status !== TableStatusEnum.EMPTY) {
-        return [
-          new ApiError(
+        if (!customer && customerName) {
+          const request = new CreateCustomerBodyDto();
+          request.name = customerName;
+          request.phoneNumber = customerPhoneNumber;
+          customer = this.customerRepository.createEntity(request);
+        }
+
+        if (request.pointUsed && request.pointUsed > customer.point) {
+          throw new ApiError(
             ResponseCodeEnum.BAD_REQUEST,
-            MessageEnum.TABLE_STATUS_INVALID,
-          ).toResponse(),
-          order,
-          customer,
-        ];
+            MessageEnum.POINT_NOT_ENOUGH,
+          ).toResponse();
+        }
       }
+
+      if (tableId) {
+        const table = await this.tableRepository.findById(tableId);
+        if (!table)
+          return [
+            new ApiError(
+              ResponseCodeEnum.NOT_FOUND,
+              MessageEnum.TABLE_NOT_FOUND,
+            ).toResponse(),
+            order,
+            customer,
+          ];
+
+        if (table.status !== TableStatusEnum.EMPTY) {
+          return [
+            new ApiError(
+              ResponseCodeEnum.BAD_REQUEST,
+              MessageEnum.TABLE_STATUS_INVALID,
+            ).toResponse(),
+            order,
+            customer,
+          ];
+        }
+      }
+
+      if (!isEmpty(details)) {
+        const dishIds = uniq(map(details, 'dishId'));
+
+        const dishes = await this.dishRepository.find({
+          where: { id: In(dishIds) },
+        });
+
+        if (dishes.length !== dishIds.length)
+          return [
+            new ApiError(
+              ResponseCodeEnum.NOT_FOUND,
+              MessageEnum.DISH_NOT_FOUND,
+            ).toResponse(),
+            order,
+            customer,
+          ];
+      }
+
+      return [null, order, customer];
+    } catch (error) {
+      return [error, order, customer];
     }
-
-    if (!isEmpty(details)) {
-      const dishIds = uniq(map(details, 'dishId'));
-
-      const dishes = await this.dishRepository.find({
-        where: { id: In(dishIds) },
-      });
-
-      if (dishes.length !== dishIds.length)
-        return [
-          new ApiError(
-            ResponseCodeEnum.NOT_FOUND,
-            MessageEnum.DISH_NOT_FOUND,
-          ).toResponse(),
-          order,
-          customer,
-        ];
-    }
-
-    return [null, order, customer];
   }
 
   private validateOrderStatus(
