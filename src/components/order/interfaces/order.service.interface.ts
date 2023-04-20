@@ -6,6 +6,7 @@ import { ListOrderQueryDto } from '../dto/request/list-order.query.dto';
 import { UpdateOrderRequestDto } from '../dto/request/update-order.request.dto';
 import { DetailOrderResponseDto } from '../dto/response/detail-order.response.dto';
 import { OrderDetailResponseDto } from '../dto/response/order-detail.response.dto';
+import { CompleteOrderRequestDto } from '../dto/request/complete-order.request.dto';
 
 export interface IOrderService {
   create(
@@ -27,4 +28,7 @@ export interface IOrderService {
   changeStatusOrderDetail(
     request: ChangeStatusOrderDetailRequestDto,
   ): Promise<ResponsePayload<OrderDetailResponseDto | any>>;
+  completeOrder(
+    request: CompleteOrderRequestDto,
+  ): Promise<ResponsePayload<DetailOrderResponseDto | any>>;
 }

@@ -5,6 +5,7 @@ export enum SocketEventEnum {
   CONFIRM_ORDER = 'order/confirm',
   CANCEL_ORDER = 'order/cancel',
   SEND_ORDER = 'order/send',
+  COMPLETE_ORDER = 'order/complete',
 
   // order detail
   CHANGE_STATUS_ORDER_DETAIL = 'order-details/change-status',

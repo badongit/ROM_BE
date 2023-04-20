@@ -12,6 +12,7 @@ import { UpdateOrderRequestDto } from '@src/components/order/dto/request/update-
 import { OrderDetail } from '@src/components/order/entities/order-details.entity';
 import { Order } from '@src/components/order/entities/order.entity';
 import { IOrderRepository } from '@src/components/order/interfaces/order.repository.interface';
+import { TableStatusEnum } from '@src/components/table/constants/status.enum';
 import { SortEnum } from '@src/constants/enum/sort.enum';
 import { BaseRepository } from '@src/core/repositories/base.repository';
 import { formatDateToOrderCode } from '@src/utils/common';
@@ -89,6 +90,7 @@ export class OrderRepository
     entity.customerId = customerId;
     entity.paymentMethod = paymentMethod;
     entity.pointUsed = pointUsed || 0;
+    entity.status = OrderStatusEnum.COMPLETED;
     entity.details = entity.details.map((detail) => {
       if (detail.status === OrderDetailStatusEnum.WAIT_CONFIRM)
         detail.status = OrderDetailStatusEnum.CANCEL;
@@ -96,6 +98,10 @@ export class OrderRepository
         detail.status = OrderDetailStatusEnum.COMPLETED;
       return detail;
     });
+
+    if (entity.table) {
+      entity.table.status = TableStatusEnum.EMPTY;
+    }
 
     return entity;
   }

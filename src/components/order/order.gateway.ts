@@ -20,6 +20,7 @@ import { UpdateOrderRequestDto } from './dto/request/update-order.request.dto';
 import { DetailOrderResponseDto } from './dto/response/detail-order.response.dto';
 import { IOrderRepository } from './interfaces/order.repository.interface';
 import { IOrderService } from './interfaces/order.service.interface';
+import { CompleteOrderRequestDto } from './dto/request/complete-order.request.dto';
 
 @WebSocketGateway({
   cors: {
@@ -208,6 +209,48 @@ export class OrderGateway {
         },
       ];
 
+      return from(socketResponse).pipe(map((data) => data));
+    } else {
+      return { event: SocketEventEnum.ERROR, data: response.message };
+    }
+  }
+
+  @SubscribeMessage(SocketEventEnum.COMPLETE_ORDER)
+  async completeOrder(
+    @MessageBody() request: CompleteOrderRequestDto,
+  ): Promise<any> {
+    const response = await this.orderService.completeOrder(request);
+
+    if (SUCCESS_CODE.includes(response.statusCode)) {
+      const socketResponse: any[] = [
+        {
+          event: SocketEventEnum.NOTIFICATION,
+          data: { message: MessageEnum.COMPLETED },
+        },
+      ];
+
+      const order = await this.orderRepository.detail(response.data.id);
+      const dataReturn = plainToClass(DetailOrderResponseDto, order, {
+        excludeExtraneousValues: true,
+      });
+      socketResponse.push({
+        event: SocketEventEnum.SEND_ORDER,
+        data: dataReturn,
+      });
+
+      if (response.data.tableId) {
+        const table = await this.tableRepository.findById(
+          response.data.tableId,
+        );
+        const tableReturn = plainToClass(TableResponseDto, table, {
+          excludeExtraneousValues: true,
+        });
+
+        socketResponse.push({
+          event: SocketEventEnum.SEND_TABLE,
+          data: tableReturn,
+        });
+      }
       return from(socketResponse).pipe(map((data) => data));
     } else {
       return { event: SocketEventEnum.ERROR, data: response.message };

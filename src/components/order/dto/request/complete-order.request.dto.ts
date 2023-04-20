@@ -1,13 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import {
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  Min,
-} from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
 import { PaymentMethodEnum } from '../../constants/enums';
 import { ORDER_SCHEMA } from '../../constants/schema';
 import { UpdateOrderRequestDto } from './update-order.request.dto';

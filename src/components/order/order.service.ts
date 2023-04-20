@@ -309,35 +309,49 @@ export class OrderService implements IOrderService {
 
     if (responseError) return responseError;
 
-    const completeStatus = OrderStatusEnum.COMPLETED;
-
-    if (!this.validateOrderStatus(orderExisted.status, completeStatus)) {
+    if (
+      !this.validateOrderStatus(orderExisted.status, OrderStatusEnum.COMPLETED)
+    ) {
       return new ApiError(
         ResponseCodeEnum.BAD_REQUEST,
         MessageEnum.STATUS_INVALID,
       ).toResponse();
     }
 
-    const order = this.orderRepository.completeEntity(orderExisted, request);
+    const orderEntity = this.orderRepository.completeEntity(
+      orderExisted,
+      request,
+    );
 
     let amount = 0;
-    order.details.forEach((detail) => {
+    orderEntity.details.forEach((detail) => {
       if (detail.status === OrderDetailStatusEnum.COMPLETED)
         amount = add(amount, multiply(detail.quantity, detail.price));
     });
 
-    const pointReceive = amountToPoint(amount);
-    const { amount: remainAmount, point: remainPoint } = discountAmount(
-      amount,
-      pointUsed ?? 0,
-    );
+    if (customer) {
+      const pointReceive = amountToPoint(amount);
+      const { amount: remainAmount, point: remainPoint } = discountAmount(
+        amount,
+        pointUsed ?? 0,
+      );
 
-    order.paymentReality = remainAmount;
-    // số điểm mới = số điểm cũ - (số điểm sử dụng - số điểm còn lại) + số điểm nhận được từ đơn hàng
-    customer.point = add(
-      subtract(customer.point, subtract(pointUsed, remainPoint)),
-      pointReceive,
-    );
+      amount = remainAmount;
+      // số điểm mới = số điểm cũ - (số điểm sử dụng - số điểm còn lại) + số điểm nhận được từ đơn hàng
+      customer.point = add(
+        subtract(customer.point, subtract(pointUsed, remainPoint)),
+        pointReceive,
+      );
+    }
+
+    orderEntity.paymentReality = amount;
+
+    const order = await this.orderRepository.save(orderEntity);
+    const dataReturn = plainToClass(DetailOrderResponseDto, order, {
+      excludeExtraneousValues: true,
+    });
+
+    return new ResponseBuilder(dataReturn).build();
   }
 
   private async validateBeforeSave(
@@ -424,24 +438,16 @@ export class OrderService implements IOrderService {
       if (tableId) {
         const table = await this.tableRepository.findById(tableId);
         if (!table)
-          return [
-            new ApiError(
-              ResponseCodeEnum.NOT_FOUND,
-              MessageEnum.TABLE_NOT_FOUND,
-            ).toResponse(),
-            order,
-            customer,
-          ];
+          throw new ApiError(
+            ResponseCodeEnum.NOT_FOUND,
+            MessageEnum.TABLE_NOT_FOUND,
+          ).toResponse();
 
         if (table.status !== TableStatusEnum.EMPTY) {
-          return [
-            new ApiError(
-              ResponseCodeEnum.BAD_REQUEST,
-              MessageEnum.TABLE_STATUS_INVALID,
-            ).toResponse(),
-            order,
-            customer,
-          ];
+          throw new ApiError(
+            ResponseCodeEnum.BAD_REQUEST,
+            MessageEnum.TABLE_STATUS_INVALID,
+          ).toResponse();
         }
       }
 
@@ -453,14 +459,10 @@ export class OrderService implements IOrderService {
         });
 
         if (dishes.length !== dishIds.length)
-          return [
-            new ApiError(
-              ResponseCodeEnum.NOT_FOUND,
-              MessageEnum.DISH_NOT_FOUND,
-            ).toResponse(),
-            order,
-            customer,
-          ];
+          throw new ApiError(
+            ResponseCodeEnum.NOT_FOUND,
+            MessageEnum.DISH_NOT_FOUND,
+          ).toResponse();
       }
 
       return [null, order, customer];

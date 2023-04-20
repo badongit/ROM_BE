@@ -55,7 +55,7 @@ export class Order extends BaseEntity {
   table: Table;
 
   @ManyToOne(() => Customer, (customer) => customer.orders, {
-    cascade: ['insert'],
+    cascade: ['insert', 'update'],
   })
   @JoinColumn({ name: 'customer_id', referencedColumnName: 'id' })
   customer: Customer;

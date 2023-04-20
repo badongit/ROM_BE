@@ -14,10 +14,19 @@ import { Table } from '../table/entities/table.entity';
 import { OrderDetailRepository } from '@src/repositories/order-detail.repository';
 import { OrderDetail } from './entities/order-details.entity';
 import { OrderController } from './order.controller';
+import { EmployeeRepository } from '@src/repositories/employee.repository';
+import { Employee } from '../employee/entities/employee.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Order, Customer, Table, Dish, OrderDetail]),
+    TypeOrmModule.forFeature([
+      Order,
+      Customer,
+      Table,
+      Dish,
+      OrderDetail,
+      Employee,
+    ]),
   ],
   controllers: [OrderController],
   providers: [
@@ -45,6 +54,10 @@ import { OrderController } from './order.controller';
     {
       provide: 'IOrderDetailRepository',
       useClass: OrderDetailRepository,
+    },
+    {
+      provide: 'IEmployeeRepository',
+      useClass: EmployeeRepository,
     },
   ],
   exports: [

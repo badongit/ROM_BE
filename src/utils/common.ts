@@ -53,7 +53,7 @@ export const discountAmount = (
 ): { amount: number; point: number } => {
   const asPoint = divide(amount, EXCHANGE_RATE);
 
-  if ((asPoint) => point) {
+  if (asPoint >= point) {
     return {
       amount: subtract(amount, multiply(point, EXCHANGE_RATE)),
       point: 0,
