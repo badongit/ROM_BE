@@ -85,9 +85,8 @@ export class OrderRepository
   }
 
   completeEntity(entity: Order, request: CompleteOrderRequestDto): Order {
-    const { note, customerId, paymentMethod, pointUsed } = request;
+    const { note, paymentMethod, pointUsed } = request;
     entity.note = note;
-    entity.customerId = customerId;
     entity.paymentMethod = paymentMethod;
     entity.pointUsed = pointUsed || 0;
     entity.status = OrderStatusEnum.COMPLETED;

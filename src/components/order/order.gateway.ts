@@ -21,6 +21,7 @@ import { DetailOrderResponseDto } from './dto/response/detail-order.response.dto
 import { IOrderRepository } from './interfaces/order.repository.interface';
 import { IOrderService } from './interfaces/order.service.interface';
 import { CompleteOrderRequestDto } from './dto/request/complete-order.request.dto';
+import { MobileScreenEnum } from '@src/constants/enum/mobile-screen.enum';
 
 @WebSocketGateway({
   cors: {
@@ -225,7 +226,10 @@ export class OrderGateway {
       const socketResponse: any[] = [
         {
           event: SocketEventEnum.NOTIFICATION,
-          data: { message: MessageEnum.COMPLETED },
+          data: {
+            message: MessageEnum.COMPLETED,
+            navigate: MobileScreenEnum.PAYMENT_SCREEN,
+          },
         },
       ];
 

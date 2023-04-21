@@ -342,6 +342,7 @@ export class OrderService implements IOrderService {
         subtract(customer.point, subtract(pointUsed, remainPoint)),
         pointReceive,
       );
+      orderEntity.customer = customer;
     }
 
     orderEntity.paymentReality = amount;

@@ -44,7 +44,7 @@ export const formatDateToOrderCode = (date?: Date): string => {
 
 export const amountToPoint = (amount: number): number => {
   if (amount === 0) return 0;
-  return Math.round(multiply(5, divide(amount, multiply(100, EXCHANGE_RATE))));
+  return Math.floor(multiply(5, divide(amount, multiply(100, EXCHANGE_RATE))));
 };
 
 export const discountAmount = (

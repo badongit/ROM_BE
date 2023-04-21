@@ -65,7 +65,7 @@ export class Order extends BaseEntity {
   cashier: Employee;
 
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.order, {
-    cascade: ['insert'],
+    cascade: ['insert', 'update'],
   })
   @JoinColumn({ name: 'id', referencedColumnName: 'order_id' })
   details: OrderDetail[];
