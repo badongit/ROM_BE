@@ -29,6 +29,7 @@ export enum MessageEnum {
   STATUS_INVALID = 'Trạng thái không hợp lệ',
   TABLE_STATUS_INVALID = 'Bàn đang được sử dụng',
   ROLE_INVALID = 'Vai trò không hợp lệ',
+  WAITING_TICKET_BEING_USED = 'Mã phiếu đang được sử dụng',
 
   // socket
   CREATE_SUCCESS = 'Tạo thành công',

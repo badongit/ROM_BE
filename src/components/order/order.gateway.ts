@@ -52,7 +52,10 @@ export class OrderGateway {
       const socketResponse: any[] = [
         {
           event: SocketEventEnum.NOTIFICATION,
-          data: { message: MessageEnum.CREATE_SUCCESS },
+          data: {
+            message: MessageEnum.CREATE_SUCCESS,
+            navigate: MobileScreenEnum.CREATE_ORDER_SCREEN_1,
+          },
         },
       ];
       const order = await this.orderRepository.detail(response.data.id);

@@ -369,6 +369,7 @@ export class OrderService implements IOrderService {
         tableId,
         details,
         cashierId,
+        waitingTicket,
       } = request;
 
       if (id) {
@@ -413,6 +414,19 @@ export class OrderService implements IOrderService {
           }
 
           order.cashier = employee;
+        }
+      }
+
+      if (waitingTicket) {
+        const orderExisted = await this.orderRepository.findOne({
+          where: { waitingTicket, status: OrderStatusEnum.IN_PROGRESS },
+        });
+
+        if (orderExisted) {
+          throw new ApiError(
+            ResponseCodeEnum.BAD_REQUEST,
+            MessageEnum.WAITING_TICKET_BEING_USED,
+          ).toResponse();
         }
       }
 
