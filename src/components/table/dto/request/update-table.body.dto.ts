@@ -13,6 +13,7 @@ export class UpdateTableBodyDto {
 
   @ApiPropertyOptional({ description: 'number max people', example: 10 })
   @Min(TABLE_SCHEMA.MAX_PEOPLE.MIN)
+  @Transform(({ value }) => +value)
   @IsInt()
   @IsOptional()
   maxPeople: number;

@@ -20,6 +20,7 @@ export class CreateTableBodyDto {
 
   @ApiProperty({ description: 'number max people', example: 10 })
   @Min(TABLE_SCHEMA.MAX_PEOPLE.MIN)
+  @Transform(({ value }) => +value)
   @IsInt()
   @IsNotEmpty()
   maxPeople: number;
