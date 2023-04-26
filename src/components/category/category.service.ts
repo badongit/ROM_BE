@@ -3,7 +3,6 @@ import { MessageEnum } from '@src/constants/enum/message.enum';
 import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
 import { IdParamsDto } from '@src/core/dto/request/id.params.dto';
 import { ResponsePayload } from '@src/core/interfaces/response-payload';
-import { CategoryRepository } from '@src/repositories/category.repository';
 import { ApiError } from '@src/utils/api-error';
 import { ResponseBuilder } from '@src/utils/response-builder';
 import { plainToClass } from 'class-transformer';
@@ -15,12 +14,13 @@ import { CategoryResponseDto } from './dto/response/category.response.dto';
 import { DetailCategoryResponseDto } from './dto/response/detail-category.response.dto';
 import { ICategoryService } from './interfaces/category.service.interface';
 import { removeFile } from '@src/utils/common';
+import { ICategoryRepository } from './interfaces/category.repository.interface';
 
 @Injectable()
 export class CategoryService implements ICategoryService {
   constructor(
     @Inject('ICategoryRepository')
-    private readonly categoryRepository: CategoryRepository,
+    private readonly categoryRepository: ICategoryRepository,
   ) {}
 
   async create(request: CreateCategoryBodyDto): Promise<ResponsePayload<any>> {

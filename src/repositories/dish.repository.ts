@@ -78,6 +78,7 @@ export class DishRepository
     return this.dishRepository.findAndCount({
       where: conditions,
       order: sortObj,
+      relations: { category: true },
       take: take,
       skip: skip,
     });

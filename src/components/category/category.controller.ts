@@ -78,9 +78,11 @@ export class CategoryController {
   async update(
     @Param() params: IdParamsDto,
     @Body() body: UpdateCategoryBodyDto,
-    @UploadedFile(FileValidatonPipe) file: Express.Multer.File,
+    @UploadedFile(FileValidatonPipe) file?: Express.Multer.File,
   ) {
-    body.image = file;
+    if (file) {
+      body.image = file;
+    }
     const response = await this.categoryService.update({ ...params, ...body });
 
     if (file && !SUCCESS_CODE.includes(response.statusCode)) {

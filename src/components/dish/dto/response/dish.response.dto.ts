@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { CategoryResponseDto } from '@src/components/category/dto/response/category.response.dto';
+import { Expose, Type } from 'class-transformer';
 
 export class DishResponseDto {
   @ApiProperty({ example: 1 })
@@ -25,4 +26,9 @@ export class DishResponseDto {
   @ApiProperty({ example: 1 })
   @Expose()
   categoryId: number;
+
+  @ApiProperty({ type: CategoryResponseDto })
+  @Type(() => CategoryResponseDto)
+  @Expose()
+  category: CategoryResponseDto;
 }

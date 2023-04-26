@@ -15,11 +15,10 @@ export class CustomValidationPipe implements PipeTransform {
   async transform(value: any, metadata: ArgumentMetadata) {
     const { metatype } = metadata;
     const object = plainToClass(metatype, value);
+    if (!object) {
+      return object;
+    }
     const errors = await validate(object);
-    console.log(
-      '🚀 ~ file: validation.pipe.ts:19 ~ CustomValidationPipe ~ transform ~ errors:',
-      errors,
-    );
 
     if (errors.length > 0) {
       throw new BadRequestException(

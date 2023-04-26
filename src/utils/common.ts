@@ -9,11 +9,15 @@ import { EXCHANGE_RATE } from '@src/components/order/constants';
 export const multerDiskStorage = diskStorage({
   destination: FILE_CONSTANT.FILE_FOLDER,
   filename(req: any, file, callback) {
-    const fileName =
-      randomString(10) + '-' + Date.now() + path.parse(file.originalname).ext;
-    file.filename = fileName;
+    if (file) {
+      const fileName =
+        randomString(10) + '-' + Date.now() + path.parse(file.originalname).ext;
+      file.filename = fileName;
 
-    callback(null, fileName);
+      callback(null, fileName);
+    } else {
+      callback(null, null);
+    }
   },
 });
 

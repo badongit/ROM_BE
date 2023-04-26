@@ -35,8 +35,10 @@ export class CategoryRepository
 
     entity.name = name;
     entity.active = active;
-    entity.image = image.filename;
     entity.description = description;
+    if (image) {
+      entity.image = image.filename;
+    }
 
     return entity;
   }
