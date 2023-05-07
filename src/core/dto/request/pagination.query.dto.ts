@@ -41,12 +41,14 @@ export class PaginationQueryDto {
   )
   page: number;
 
-  @Transform(({value}) => +value)
+  @Transform(({ value }) => +value)
   isGetAll: number;
 
   @ApiPropertyOptional({ example: '10' })
   @Allow()
   limit: number;
+
+  user?: any;
 
   @ApiPropertyOptional({ example: '+name,-createdAt' })
   @Transform(({ value }) => {

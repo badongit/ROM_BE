@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   Query,
 } from '@nestjs/common';
 import {
@@ -50,7 +51,8 @@ export class EmployeeController {
   @Get()
   @ApiOperation({ summary: 'List' })
   @ApiResponse({ status: ResponseCodeEnum.OK, type: EmployeeResponseDto })
-  list(@Query() query: ListEmployeeQueryDto) {
+  list(@Query() query: ListEmployeeQueryDto, @Req() req: any) {
+    query.user = req.user;
     return this.employeeService.list(query);
   }
 
