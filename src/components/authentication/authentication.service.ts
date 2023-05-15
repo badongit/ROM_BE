@@ -18,6 +18,7 @@ import { LoginRequestDto } from './dto/request/login.request.dto';
 import { GetTokenResponseDto } from './dto/response/get-token.response.dto';
 import { LoginResponseDto } from './dto/response/login.response.dto';
 import { IAuthenticationService } from './interfaces/authentication.service.interface';
+import { UpdatePasswordBodyDto } from './dto/request/update-password.body.dtp';
 
 @Injectable()
 export class AuthenticationService implements IAuthenticationService {
@@ -25,10 +26,8 @@ export class AuthenticationService implements IAuthenticationService {
     private readonly jwtService: JwtService,
 
     @Inject('IEmployeeRepository')
-    private readonly employeeRepository: IEmployeeRepository,
-  ) // @Inject(CACHE_MANAGER)
-  // private readonly cacheManager: Cache,
-  {}
+    private readonly employeeRepository: IEmployeeRepository, // @Inject(CACHE_MANAGER) // private readonly cacheManager: Cache,
+  ) {}
 
   async login(
     request: LoginRequestDto,
@@ -117,5 +116,23 @@ export class AuthenticationService implements IAuthenticationService {
     const secret = JWT_CONSTANT.REFRESH_TOKEN_SECRET;
 
     return this.jwtService.verify(token, { secret });
+  }
+
+  async updatePassword(
+    request: UpdatePasswordBodyDto,
+  ): Promise<ResponsePayload<LoginResponseDto | any>> {
+    const { user, password, newPassword } = request;
+
+    if (!user || !user.validatePassword(password)) {
+      return new ApiError(
+        ResponseCodeEnum.BAD_REQUEST,
+        MessageEnum.PASSWORD_WRONG,
+      ).toResponse();
+    }
+
+    user.password = newPassword;
+    await this.employeeRepository.save(user);
+
+    return new ResponseBuilder().build();
   }
 }

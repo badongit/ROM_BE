@@ -4,6 +4,7 @@ export enum MessageEnum {
   BAD_REQUEST = 'Yêu cầu không hợp lệ',
   UNAUTHORIZED = 'Không có quyền truy cập',
   PHONE_NUMBER_OR_PASSWORD_WRONG = 'Số điện thoại hoặc mật khẩu không đúng',
+  PASSWORD_WRONG = 'Mật khẩu không đúng',
   FILE_SIZE_EXCEEDED_ALLOW = 'Kích thước file quá lớn',
   FILE_TYPE_NOT_ALLOW = 'Loại file không hợp lệ',
   ACCOUNT_DISABLED = 'Tài khoản đã bị vô hiệu hóa',

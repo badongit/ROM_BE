@@ -56,7 +56,9 @@ export class Employee extends BaseEntity {
   @BeforeUpdate()
   hashPassword() {
     const saltOrRounds = 10;
-    this.password = bcryptJs.hashSync(this.password, saltOrRounds);
+    if (this.password) {
+      this.password = bcryptJs.hashSync(this.password, saltOrRounds);
+    }
   }
 
   validatePassword(password: string): boolean {

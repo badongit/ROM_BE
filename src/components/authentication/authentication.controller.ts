@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Put } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
 import { Public } from '@src/core/decorators/public.decorator';
@@ -11,6 +11,7 @@ import { Req } from '@nestjs/common/decorators';
 import { plainToClass } from 'class-transformer';
 import { DetailEmployeeResponseDto } from '../employee/dto/response/detail-employee.response.dto';
 import { ResponseBuilder } from '@src/utils/response-builder';
+import { UpdatePasswordBodyDto } from './dto/request/update-password.body.dtp';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -44,5 +45,15 @@ export class AuthenticationController {
       excludeExtraneousValues: true,
     });
     return new ResponseBuilder(dataReturn).build();
+  }
+
+  @Put('/password')
+  @ApiOperation({ summary: 'Change password' })
+  @ApiResponse({ status: ResponseCodeEnum.OK, type: DetailEmployeeResponseDto })
+  changePassword(@Body() body: UpdatePasswordBodyDto, @Req() req) {
+    return this.authenticationService.updatePassword({
+      ...body,
+      user: req.user,
+    });
   }
 }
