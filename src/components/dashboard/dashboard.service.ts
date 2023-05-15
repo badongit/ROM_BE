@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ResponsePayload } from '@src/core/interfaces/response-payload';
 import { ResponseBuilder } from '@src/utils/response-builder';
+import { plainToClass } from 'class-transformer';
 import { ICustomerRepository } from '../customer/interfaces/customer.repository.interface';
 import { IDishRepository } from '../dish/interfaces/dish.repository.interface';
 import { EmployeeStatusEnum } from '../employee/constants/status.enum';
@@ -8,9 +9,13 @@ import { IEmployeeRepository } from '../employee/interfaces/employee.repository.
 import { OrderStatusEnum } from '../order/constants/enums';
 import { IOrderRepository } from '../order/interfaces/order.repository.interface';
 import { ITableRepository } from '../table/interfaces/table.repository.interface';
-import { DashboardTimeRequestDto } from './dto/dashboard-time.request.dto';
-import { SummaryOrderResponseDto } from './dto/summary-order.response.dto';
-import { SyntheticResponseDto } from './dto/synthetic.response.dto';
+import { DashboardTimeRequestDto } from './dto/request/dashboard-time.request.dto';
+import { OrderStatisticsRequestDto } from './dto/request/order-statistics.request.dto';
+import { RevenueStatisticsRequestDto } from './dto/request/revenue-statistics.request.dto';
+import { SummaryOrderResponseDto } from './dto/request/summary-order.response.dto';
+import { OrderStatisticsResponseDto } from './dto/response/order-statistics.response.dto';
+import { RevenueStatisticsResponseDto } from './dto/response/revenue-statistics.response.dto';
+import { SyntheticResponseDto } from './dto/response/synthetic.response.dto';
 import { IDashboardService } from './interfaces/dashboard.service.interface';
 
 @Injectable()
@@ -59,5 +64,28 @@ export class DashboardService implements IDashboardService {
     });
 
     return new ResponseBuilder({ countCompleted, countCanceled }).build();
+  }
+
+  async revenueStatistics(
+    request: RevenueStatisticsRequestDto,
+  ): Promise<ResponsePayload<RevenueStatisticsResponseDto>> {
+    const data = await this.orderRepository.revenueStatistics(request);
+
+    const dataReturn = plainToClass(RevenueStatisticsResponseDto, data, {
+      excludeExtraneousValues: true,
+    });
+
+    return new ResponseBuilder(dataReturn).build();
+  }
+
+  async orderStatistics(
+    request: OrderStatisticsRequestDto,
+  ): Promise<ResponsePayload<OrderStatisticsResponseDto>> {
+    const data = await this.orderRepository.orderStatistics(request);
+
+    const dataReturn = plainToClass(OrderStatisticsResponseDto, data, {
+      excludeExtraneousValues: true,
+    });
+    return new ResponseBuilder(dataReturn).build();
   }
 }

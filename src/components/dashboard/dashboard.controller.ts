@@ -7,8 +7,12 @@ import {
 } from '@nestjs/swagger';
 import { IDashboardService } from './interfaces/dashboard.service.interface';
 import { ResponseCodeEnum } from '@src/constants/enum/response-code.enum';
-import { SyntheticResponseDto } from './dto/synthetic.response.dto';
-import { SummaryOrderResponseDto } from './dto/summary-order.response.dto';
+import { SyntheticResponseDto } from './dto/response/synthetic.response.dto';
+import { SummaryOrderResponseDto } from './dto/request/summary-order.response.dto';
+import { RevenueStatisticsRequestDto } from './dto/request/revenue-statistics.request.dto';
+import { OrderStatisticsRequestDto } from './dto/request/order-statistics.request.dto';
+import { OrderStatisticsResponseDto } from './dto/response/order-statistics.response.dto';
+import { RevenueStatisticsResponseDto } from './dto/response/revenue-statistics.response.dto';
 
 @ApiBearerAuth()
 @ApiTags('Dashboard')
@@ -28,8 +32,21 @@ export class DashboardController {
 
   @Get('order')
   @ApiOperation({ summary: 'Summary order' })
-  @ApiResponse({ status: ResponseCodeEnum.OK, type: SummaryOrderResponseDto })
-  summaryOrder(@Query() query) {
-    return this.dashboardService.summaryOrder(query);
+  @ApiResponse({
+    status: ResponseCodeEnum.OK,
+    type: OrderStatisticsResponseDto,
+  })
+  summaryOrder(@Query() query: OrderStatisticsRequestDto) {
+    return this.dashboardService.orderStatistics(query);
+  }
+
+  @Get('revenue')
+  @ApiOperation({ summary: 'Summary order' })
+  @ApiResponse({
+    status: ResponseCodeEnum.OK,
+    type: RevenueStatisticsResponseDto,
+  })
+  revenueStatistics(@Query() query: RevenueStatisticsRequestDto) {
+    return this.dashboardService.revenueStatistics(query);
   }
 }

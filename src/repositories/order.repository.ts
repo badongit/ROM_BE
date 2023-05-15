@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TimeTypeEnum } from '@src/components/dashboard/constants/enums';
+import { RevenueStatisticsRequestDto } from '@src/components/dashboard/dto/request/revenue-statistics.request.dto';
 import { PREFIX_ORDER_CODE } from '@src/components/order/constants';
 import {
   OrderDetailStatusEnum,
@@ -169,5 +171,71 @@ export class OrderRepository
         },
       },
     });
+  }
+
+  revenueStatistics(request: RevenueStatisticsRequestDto): Promise<any> {
+    let templateString = '';
+
+    switch (request.timeType) {
+      case TimeTypeEnum.DAY:
+        templateString = 'dd/mm/yyyy';
+        break;
+      case TimeTypeEnum.MONTH:
+        templateString = 'mm/yyyy';
+        break;
+      case TimeTypeEnum.YEAR:
+        templateString = 'yyyy';
+        break;
+      default:
+        templateString = 'dd/mm/yyyy';
+        break;
+    }
+
+    const query = this.orderRepository
+      .createQueryBuilder('o')
+      .select([
+        'SUM(payment_reality) AS totalAmount',
+        `TO_CHAR(o.created_at::DATE, '${templateString}') AS time`,
+      ])
+      .where('o.created_at BETWEEN :startDate AND :endDate', {
+        startDate: request.startDate,
+        endDate: request.endDate,
+      })
+      .groupBy('time');
+
+    return query.getRawMany();
+  }
+
+  orderStatistics(request: RevenueStatisticsRequestDto): Promise<any> {
+    let templateString = '';
+
+    switch (request.timeType) {
+      case TimeTypeEnum.DAY:
+        templateString = 'dd/mm/yyyy';
+        break;
+      case TimeTypeEnum.MONTH:
+        templateString = 'mm/yyyy';
+        break;
+      case TimeTypeEnum.YEAR:
+        templateString = 'yyyy';
+        break;
+      default:
+        templateString = 'dd/mm/yyyy';
+        break;
+    }
+
+    const query = this.orderRepository
+      .createQueryBuilder('o')
+      .select([
+        'COUNT(*) AS total',
+        `TO_CHAR(o.created_at::DATE, '${templateString}') AS time`,
+      ])
+      .where('o.created_at BETWEEN :startDate AND :endDate', {
+        startDate: request.startDate,
+        endDate: request.endDate,
+      })
+      .groupBy('time');
+
+    return query.getRawMany();
   }
 }
