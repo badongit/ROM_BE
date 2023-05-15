@@ -41,7 +41,9 @@ export class DishRepository
     entity.status = status;
     entity.description = description;
     entity.categoryId = categoryId;
-    entity.image = image.filename;
+    if (image) {
+      entity.image = image.filename;
+    }
 
     return entity;
   }

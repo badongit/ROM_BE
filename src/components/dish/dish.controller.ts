@@ -80,7 +80,9 @@ export class DishController {
     @Body() body: UpdateDishBodyDto,
     @UploadedFile(FileValidatonPipe) file?: Express.Multer.File,
   ) {
-    body.image = file;
+    if (file) {
+      body.image = file;
+    }
     const response = await this.dishService.update({ ...params, ...body });
 
     if (file && !SUCCESS_CODE.includes(response.statusCode)) {
