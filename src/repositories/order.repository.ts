@@ -201,6 +201,7 @@ export class OrderRepository
         startDate: request.startDate,
         endDate: request.endDate,
       })
+      .andWhere('o.status = :status', { status: OrderStatusEnum.COMPLETED })
       .groupBy('time');
 
     return query.getRawMany();
@@ -234,6 +235,7 @@ export class OrderRepository
         startDate: request.startDate,
         endDate: request.endDate,
       })
+      .andWhere('o.status = :status', { status: OrderStatusEnum.COMPLETED })
       .groupBy('time');
 
     return query.getRawMany();
