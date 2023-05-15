@@ -32,7 +32,7 @@ export class EmployeeRepository
     entity.name = name;
     entity.code = code;
     entity.phoneNumber = phoneNumber;
-    entity.password = password;
+    entity.password = password ?? 'hadilao123';
     entity.status = EmployeeStatusEnum.WORKING;
     entity.dateJoin = dateJoin || new Date();
     entity.salary = salary || 0;
@@ -82,6 +82,11 @@ export class EmployeeRepository
       ])
       .innerJoin(Role, 'r', 'r.id = e.roleId');
 
+    console.log('🚀 ~ file: employee.repository.ts:86 ~ user:', request.user);
+    if (request.user) {
+      query.andWhere('e.id <> :id', { id: request.user.id });
+    }
+
     if (!isEmpty(keyword)) {
       query.andWhere(
         `(
@@ -128,7 +133,7 @@ export class EmployeeRepository
     }
 
     if (isEmpty(sort)) {
-      query.orderBy('createdAt', SortEnum.DESC);
+      query.orderBy('created_at', SortEnum.DESC);
     } else {
       sort.forEach((item) => {
         switch (item.column) {
@@ -136,8 +141,8 @@ export class EmployeeRepository
           case 'code':
           case 'status':
           case 'price':
-          case 'categoryId':
-          case 'createdAt':
+          case 'category_id':
+          case 'created_at':
             query.addOrderBy(item.column, item.order);
             break;
         }

@@ -6,7 +6,6 @@ import { ResponsePayload } from '@src/core/interfaces/response-payload';
 import { ApiError } from '@src/utils/api-error';
 import { ResponseBuilder } from '@src/utils/response-builder';
 import { plainToClass } from 'class-transformer';
-import { UpdateCategoryBodyDto } from '../category/dto/request/update-category.body.dto';
 import { CreateCustomerBodyDto } from './dto/request/create-customer.body.dto';
 import { ListCustomerQueryDto } from './dto/request/list-customer.query.dto';
 import { UpdateCustomerBodyDto } from './dto/request/update-customer.body.dto';
@@ -14,6 +13,7 @@ import { CustomerResponseDto } from './dto/response/customer.response.dto';
 import { DetailCustomerResponseDto } from './dto/response/detail-customer.response.dto';
 import { ICustomerRepository } from './interfaces/customer.repository.interface';
 import { ICustomerService } from './interfaces/customer.service.interface';
+import { Not } from 'typeorm';
 
 @Injectable()
 export class CustomerService implements ICustomerService {
@@ -55,7 +55,7 @@ export class CustomerService implements ICustomerService {
 
     if (request.phoneNumber) {
       const existedPhone = await this.customerRepository.findOne({
-        where: { phoneNumber: request.phoneNumber },
+        where: { phoneNumber: request.phoneNumber, id: Not(request.id) },
       });
 
       if (existedPhone) {

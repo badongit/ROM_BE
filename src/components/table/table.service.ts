@@ -45,6 +45,10 @@ export class TableService implements ITableService {
     request: ListTableQueryDto,
   ): Promise<ResponsePayload<TableResponseDto>> {
     const [tables, count] = await this.tableRepository.list(request);
+    console.log(
+      '🚀 ~ file: table.service.ts:48 ~ TableService ~ tables:',
+      tables,
+    );
 
     const dataReturn = plainToClass(TableResponseDto, tables, {
       excludeExtraneousValues: true,

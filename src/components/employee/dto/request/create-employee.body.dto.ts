@@ -41,7 +41,7 @@ export class CreateEmployeeBodyDto {
   @MinLength(EMPLOYEE_SCHEMA.PASSWORD.MIN_LENGTH)
   @Transform(({ value }) => value.trim())
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   password: string;
 
   @ApiPropertyOptional({ example: '2023-01-21T07:48:18.262Z' })

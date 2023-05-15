@@ -1,7 +1,7 @@
 export enum MessageEnum {
   // common
   SUCCESS = 'Thành công',
-  BAD_REQUEST = 'Bad request',
+  BAD_REQUEST = 'Yêu cầu không hợp lệ',
   UNAUTHORIZED = 'Không có quyền truy cập',
   PHONE_NUMBER_OR_PASSWORD_WRONG = 'Số điện thoại hoặc mật khẩu không đúng',
   FILE_SIZE_EXCEEDED_ALLOW = 'Kích thước file quá lớn',

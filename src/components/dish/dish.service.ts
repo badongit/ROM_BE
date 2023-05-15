@@ -9,8 +9,6 @@ import { ApiError } from '@src/utils/api-error';
 import { removeFile } from '@src/utils/common';
 import { ResponseBuilder } from '@src/utils/response-builder';
 import { plainToClass } from 'class-transformer';
-import * as fs from 'fs';
-import path from 'path';
 import { ICategoryRepository } from '../category/interfaces/category.repository.interface';
 import { CreateDishBodyDto } from './dto/request/creat-dish.body.dto';
 import { ListDishQueryDto } from './dto/request/list-dish.query.dto';

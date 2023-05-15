@@ -16,7 +16,7 @@ export class EmployeeResponseDto {
   code: string;
 
   @ApiProperty({ example: '0123456789' })
-  @Expose()
+  @Expose({ name: 'phonenumber' })
   phoneNumber: string;
 
   @ApiProperty({ example: 1 })
@@ -24,15 +24,15 @@ export class EmployeeResponseDto {
   status: number;
 
   @ApiProperty({ example: '2023-01-21T07:48:18.262Z' })
-  @Expose()
+  @Expose({ name: 'datejoin' })
   dateJoin: Date;
 
   @ApiProperty({ example: '2023-01-21T07:48:18.262Z' })
-  @Expose()
+  @Expose({ name: 'dateout' })
   dateOut: Date;
 
   @ApiProperty({ example: 1 })
-  @Expose()
+  @Expose({ name: 'roleid' })
   roleId: number;
 
   @ApiProperty({ type: RoleResponseDto })

@@ -131,7 +131,12 @@ export class OrderRepository
     };
 
     if (isGetDetails) {
-      findOptions.relations = { details: true, customer: true };
+      findOptions.relations = {
+        details: true,
+        customer: true,
+        table: true,
+        cashier: true,
+      };
       findOptions.order.details = {
         createdAt: 'ASC',
       };
@@ -152,7 +157,11 @@ export class OrderRepository
       where: { id },
       relations: {
         customer: true,
-        details: true,
+        details: {
+          dish: true,
+        },
+        table: true,
+        cashier: true,
       },
       order: {
         details: {

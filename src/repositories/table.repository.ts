@@ -80,6 +80,9 @@ export class TableRepository
       take: take,
       skip: skip,
       isGetAll: isGetAll,
+      relations: {
+        floor: true,
+      },
     });
   }
 }

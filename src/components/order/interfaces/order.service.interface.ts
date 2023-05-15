@@ -18,6 +18,9 @@ export interface IOrderService {
   list(
     request: ListOrderQueryDto,
   ): Promise<ResponsePayload<DetailOrderResponseDto>>;
+  detail(
+    request: IdParamsDto,
+  ): Promise<ResponsePayload<DetailOrderResponseDto | any>>;
 
   confirmOrder(
     request: IdParamsDto,

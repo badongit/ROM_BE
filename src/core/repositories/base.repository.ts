@@ -103,4 +103,8 @@ export class BaseRepository<Entity extends ObjectLiteral>
   recoverMany(entities: Entity[], options?: SaveOptions): Promise<Entity[]> {
     return this.repository.recover(entities, options);
   }
+
+  count(options?: FindManyOptions<Entity>): Promise<number> {
+    return this.repository.count(options);
+  }
 }

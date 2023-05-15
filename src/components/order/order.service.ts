@@ -199,6 +199,25 @@ export class OrderService implements IOrderService {
     }).build();
   }
 
+  async detail(
+    request: IdParamsDto,
+  ): Promise<ResponsePayload<DetailOrderResponseDto | any>> {
+    const order = await this.orderRepository.detail(request.id);
+
+    if (!order) {
+      return new ApiError(
+        ResponseCodeEnum.NOT_FOUND,
+        MessageEnum.ORDER_NOT_FOUND,
+      ).toResponse();
+    }
+
+    const dataReturn = plainToClass(DetailOrderResponseDto, order, {
+      excludeExtraneousValues: true,
+    });
+
+    return new ResponseBuilder(dataReturn).build();
+  }
+
   async confirmOrder(
     request: IdParamsDto,
   ): Promise<ResponsePayload<DetailOrderResponseDto | any>> {
