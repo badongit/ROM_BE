@@ -14,6 +14,7 @@ import { TableRepository } from '@src/repositories/table.repository';
 import { DishRepository } from '@src/repositories/dish.repository';
 import { OrderDetailRepository } from '@src/repositories/order-detail.repository';
 import { OrderDetail } from '../order/entities/order-details.entity';
+import { Role } from '../role/entities/role.entity';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { OrderDetail } from '../order/entities/order-details.entity';
       Table,
       Dish,
       OrderDetail,
+      Role,
     ]),
   ],
   controllers: [DashboardController],

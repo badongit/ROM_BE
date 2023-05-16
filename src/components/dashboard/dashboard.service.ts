@@ -4,7 +4,7 @@ import { ResponsePayload } from '@src/core/interfaces/response-payload';
 import { ResponseBuilder } from '@src/utils/response-builder';
 import { plainToClass } from 'class-transformer';
 import { has, isEmpty, keyBy, map } from 'lodash';
-import { In } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { Customer } from '../customer/entities/customer.entity';
 import { ICustomerRepository } from '../customer/interfaces/customer.repository.interface';
 import { Dish } from '../dish/entities/dish.entity';
@@ -25,6 +25,9 @@ import { OrderStatisticsResponseDto } from './dto/response/order-statistics.resp
 import { RevenueStatisticsResponseDto } from './dto/response/revenue-statistics.response.dto';
 import { SyntheticResponseDto } from './dto/response/synthetic.response.dto';
 import { IDashboardService } from './interfaces/dashboard.service.interface';
+import { RoleEnum } from '@src/constants/enum/role.enum';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Role } from '../role/entities/role.entity';
 
 @Injectable()
 export class DashboardService implements IDashboardService {
@@ -41,6 +44,9 @@ export class DashboardService implements IDashboardService {
     @Inject('IOrderDetailRepository')
     private readonly orderDetailRepository: IOrderDetailRepository,
 
+    @InjectRepository(Role)
+    private readonly roleRepository: Repository<Role>,
+
     @Inject('IDishRepository')
     private readonly dishRepository: IDishRepository,
 
@@ -49,8 +55,11 @@ export class DashboardService implements IDashboardService {
   ) {}
 
   async synthetic(): Promise<ResponsePayload<SyntheticResponseDto>> {
+    const roleAdmin = await this.roleRepository.findOne({
+      where: { code: RoleEnum.ADMIN },
+    });
     const totalEmployee = await this.employeeRepository.count({
-      where: { status: EmployeeStatusEnum.WORKING },
+      where: { status: EmployeeStatusEnum.WORKING, roleId: roleAdmin.id },
     });
 
     const totalCustomer = await this.customerRepository.count();

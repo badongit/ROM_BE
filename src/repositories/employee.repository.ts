@@ -14,6 +14,7 @@ import { EmployeeResponseDto } from '@src/components/employee/dto/response/emplo
 import { ChangeStatusEmployeeBodyDto } from '@src/components/employee/dto/request/change-employee.body.dto';
 import { UpdateEmployeeByAdminBodyDto } from '@src/components/employee/dto/request/update-employee-by-admin.body.dto';
 import { UpdateEmployeeByManagerBodyDto } from '@src/components/employee/dto/request/update-employee-by-manager.body.dto';
+import { RoleEnum } from '@src/constants/enum/role.enum';
 
 export class EmployeeRepository
   extends BaseRepository<Employee>
@@ -80,9 +81,10 @@ export class EmployeeRepository
         'e.salary AS salary',
         `JSON_BUILD_OBJECT('id', r.id, 'name', r.name, 'code', r.code) AS role`,
       ])
-      .innerJoin(Role, 'r', 'r.id = e.roleId');
+      .innerJoin(Role, 'r', 'r.id = e.roleId AND r.code <> :roleCode', {
+        roleCode: RoleEnum.ADMIN,
+      });
 
-    console.log('🚀 ~ file: employee.repository.ts:86 ~ user:', request.user);
     if (request.user) {
       query.andWhere('e.id <> :id', { id: request.user.id });
     }

@@ -16,6 +16,17 @@ const AppDataSource = new DataSource({
   subscribers: [],
   migrations: ['dist/migrations/*'],
   migrationsRun: false,
+  ssl:
+    process.env.DATABASE_SSL !== 'false'
+      ? process.env.CA_CERT
+        ? {
+            rejectUnauthorized: true,
+            ca: process.env.CA_CERT,
+          }
+        : {
+            rejectUnauthorized: false,
+          }
+      : false,
   namingStrategy: new SnakeNamingStrategy(),
 });
 
