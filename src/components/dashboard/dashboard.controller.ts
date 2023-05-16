@@ -13,6 +13,9 @@ import { RevenueStatisticsRequestDto } from './dto/request/revenue-statistics.re
 import { OrderStatisticsRequestDto } from './dto/request/order-statistics.request.dto';
 import { OrderStatisticsResponseDto } from './dto/response/order-statistics.response.dto';
 import { RevenueStatisticsResponseDto } from './dto/response/revenue-statistics.response.dto';
+import { PaginationQueryDto } from '@src/core/dto/request/pagination.query.dto';
+import { CustomerOrderStatisticsResponseDto } from './dto/response/customer-order-statistics.response.dto';
+import { DishOrderStatisticsResponseDto } from './dto/response/dish-order-statistics.response.dto';
 
 @ApiBearerAuth()
 @ApiTags('Dashboard')
@@ -48,5 +51,25 @@ export class DashboardController {
   })
   revenueStatistics(@Query() query: RevenueStatisticsRequestDto) {
     return this.dashboardService.revenueStatistics(query);
+  }
+
+  @Get('dishes')
+  @ApiOperation({ summary: 'Summary dish order' })
+  @ApiResponse({
+    status: ResponseCodeEnum.OK,
+    type: DishOrderStatisticsResponseDto,
+  })
+  dishOrderStatistics(@Query() query: PaginationQueryDto) {
+    return this.dashboardService.dishOrderStatistics(query);
+  }
+
+  @Get('customers')
+  @ApiOperation({ summary: 'Summary customer order' })
+  @ApiResponse({
+    status: ResponseCodeEnum.OK,
+    type: CustomerOrderStatisticsResponseDto,
+  })
+  customerOrderStatistics(@Query() query: PaginationQueryDto) {
+    return this.dashboardService.customerOrderStatistics(query);
   }
 }

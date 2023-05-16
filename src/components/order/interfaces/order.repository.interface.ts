@@ -6,6 +6,7 @@ import { ListOrderQueryDto } from '../dto/request/list-order.query.dto';
 import { CompleteOrderRequestDto } from '../dto/request/complete-order.request.dto';
 import { OrderStatisticsRequestDto } from '@src/components/dashboard/dto/request/order-statistics.request.dto';
 import { RevenueStatisticsRequestDto } from '@src/components/dashboard/dto/request/revenue-statistics.request.dto';
+import { PaginationQueryDto } from '@src/core/dto/request/pagination.query.dto';
 
 export interface IOrderRepository extends BaseRepository<Order> {
   createEntity(request: CreateOrderRequestDto): Order;
@@ -15,4 +16,5 @@ export interface IOrderRepository extends BaseRepository<Order> {
   detail(id: number): Promise<Order>;
   revenueStatistics(request: RevenueStatisticsRequestDto): Promise<any>;
   orderStatistics(request: OrderStatisticsRequestDto): Promise<any>;
+  customerOrderStatistics(request: PaginationQueryDto): Promise<any>;
 }

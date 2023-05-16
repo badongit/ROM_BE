@@ -6,6 +6,7 @@ import { RevenueStatisticsRequestDto } from '../dto/request/revenue-statistics.r
 import { OrderStatisticsRequestDto } from '../dto/request/order-statistics.request.dto';
 import { RevenueStatisticsResponseDto } from '../dto/response/revenue-statistics.response.dto';
 import { OrderStatisticsResponseDto } from '../dto/response/order-statistics.response.dto';
+import { PaginationQueryDto } from '@src/core/dto/request/pagination.query.dto';
 
 export interface IDashboardService {
   synthetic(): Promise<ResponsePayload<SyntheticResponseDto>>;
@@ -18,4 +19,10 @@ export interface IDashboardService {
   orderStatistics(
     request: OrderStatisticsRequestDto,
   ): Promise<ResponsePayload<OrderStatisticsResponseDto>>;
+  dishOrderStatistics(
+    request: PaginationQueryDto,
+  ): Promise<ResponsePayload<any>>;
+  customerOrderStatistics(
+    request: PaginationQueryDto,
+  ): Promise<ResponsePayload<any>>;
 }

@@ -16,6 +16,7 @@ import { Order } from '@src/components/order/entities/order.entity';
 import { IOrderRepository } from '@src/components/order/interfaces/order.repository.interface';
 import { TableStatusEnum } from '@src/components/table/constants/status.enum';
 import { SortEnum } from '@src/constants/enum/sort.enum';
+import { PaginationQueryDto } from '@src/core/dto/request/pagination.query.dto';
 import { BaseRepository } from '@src/core/repositories/base.repository';
 import { formatDateToOrderCode } from '@src/utils/common';
 import { isEmpty } from 'lodash';
@@ -237,6 +238,22 @@ export class OrderRepository
       })
       .andWhere('o.status = :status', { status: OrderStatusEnum.COMPLETED })
       .groupBy('time');
+
+    return query.getRawMany();
+  }
+
+  customerOrderStatistics(request: PaginationQueryDto): Promise<any> {
+    const query = this.orderRepository
+      .createQueryBuilder('o')
+      .select([
+        'SUM(o.payment_reality) AS total',
+        `o.customer_id AS customerId`,
+      ])
+      .where('o.customer_id IS NOT NULL')
+      .andWhere('o.status = :status', { status: OrderStatusEnum.COMPLETED })
+      .limit(request.limit)
+      .orderBy('total', 'DESC')
+      .groupBy('o.customer_id');
 
     return query.getRawMany();
   }

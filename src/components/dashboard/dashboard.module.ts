@@ -12,9 +12,20 @@ import { Table } from '../table/entities/table.entity';
 import { Dish } from '../dish/entities/dish.entity';
 import { TableRepository } from '@src/repositories/table.repository';
 import { DishRepository } from '@src/repositories/dish.repository';
+import { OrderDetailRepository } from '@src/repositories/order-detail.repository';
+import { OrderDetail } from '../order/entities/order-details.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Employee, Order, Customer, Table, Dish])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Employee,
+      Order,
+      Customer,
+      Table,
+      Dish,
+      OrderDetail,
+    ]),
+  ],
   controllers: [DashboardController],
   providers: [
     {
@@ -32,6 +43,10 @@ import { DishRepository } from '@src/repositories/dish.repository';
     {
       provide: 'IOrderRepository',
       useClass: OrderRepository,
+    },
+    {
+      provide: 'IOrderDetailRepository',
+      useClass: OrderDetailRepository,
     },
     {
       provide: 'ITableRepository',
