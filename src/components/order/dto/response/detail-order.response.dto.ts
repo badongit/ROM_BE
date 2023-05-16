@@ -59,6 +59,10 @@ export class DetailOrderResponseDto {
   @Expose()
   waitingTicket: string;
 
+  @ApiProperty({})
+  @Expose()
+  createdAt: Date;
+
   @ApiProperty({ type: DetailTableResponseDto })
   @Type(() => DetailTableResponseDto)
   @Expose()
