@@ -114,6 +114,9 @@ export class DashboardService implements IDashboardService {
     if (!isEmpty(dishIds))
       dishes = await this.dishRepository.find({
         where: { id: In(dishIds) },
+        relations: {
+          category: true,
+        },
         withDeleted: true,
       });
     const dishMap = keyBy(dishes, 'id');
