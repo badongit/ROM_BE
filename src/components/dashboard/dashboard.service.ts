@@ -58,8 +58,9 @@ export class DashboardService implements IDashboardService {
     const roleAdmin = await this.roleRepository.findOne({
       where: { code: RoleEnum.ADMIN },
     });
+
     const totalEmployee = await this.employeeRepository.count({
-      where: { status: EmployeeStatusEnum.WORKING, roleId: roleAdmin.id },
+      where: { status: EmployeeStatusEnum.WORKING, roleId: Not(roleAdmin.id) },
     });
 
     const totalCustomer = await this.customerRepository.count();
