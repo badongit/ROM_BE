@@ -124,7 +124,6 @@ export class DishService implements IDishService {
     }
 
     await this.dishRepository.softDelete(request.id);
-    removeFile(existed.image);
     return new ResponseBuilder().build();
   }
 }

@@ -121,7 +121,6 @@ export class CategoryService implements ICategoryService {
     }
 
     await this.categoryRepository.softDelete(request.id);
-    removeFile(existed.image);
 
     return new ResponseBuilder().build();
   }
