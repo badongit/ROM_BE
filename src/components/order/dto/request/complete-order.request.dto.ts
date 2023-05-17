@@ -15,9 +15,9 @@ import {
 } from 'class-validator';
 import { PaymentMethodEnum } from '../../constants/enums';
 import { ORDER_SCHEMA } from '../../constants/schema';
-import { UpdateOrderRequestDto } from './update-order.request.dto';
+import { BaseSocketDto } from './base-socket.dto';
 
-export class CompleteOrderRequestDto {
+export class CompleteOrderRequestDto extends BaseSocketDto {
   @ApiProperty({ example: 1 })
   @IsInt()
   @IsNotEmpty()

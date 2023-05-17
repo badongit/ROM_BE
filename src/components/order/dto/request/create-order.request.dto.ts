@@ -17,6 +17,7 @@ import {
 } from 'class-validator';
 import { OrderStatusEnum, OrderTypeEnum } from '../../constants/enums';
 import { ORDER_DETAIL_SCHEMA, ORDER_SCHEMA } from '../../constants/schema';
+import { BaseSocketDto } from './base-socket.dto';
 
 class OrderDetailDto {
   @ApiProperty({ example: 1 })
@@ -43,7 +44,7 @@ class OrderDetailDto {
   dishId: number;
 }
 
-export class CreateOrderRequestDto {
+export class CreateOrderRequestDto extends BaseSocketDto {
   @ApiProperty({ example: 0 })
   @IsEnum(OrderTypeEnum)
   @IsNotEmpty()

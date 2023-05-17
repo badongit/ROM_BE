@@ -3,6 +3,7 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { SUCCESS_CODE } from '@src/constants/common';
 import { MessageEnum } from '@src/constants/enum/message.enum';
@@ -42,6 +43,8 @@ export class OrderGateway {
     private readonly tableRepository: ITableRepository,
   ) {}
 
+  @WebSocketServer() server;
+
   @SubscribeMessage(SocketEventEnum.CREATE_ORDER)
   async create(@MessageBody() request: CreateOrderRequestDto): Promise<any> {
     const { tableId } = request;
@@ -62,20 +65,14 @@ export class OrderGateway {
       const dataReturn = plainToClass(DetailOrderResponseDto, order, {
         excludeExtraneousValues: true,
       });
-      socketResponse.push({
-        event: SocketEventEnum.SEND_ORDER,
-        data: dataReturn,
-      });
+      this.server.emit(SocketEventEnum.SEND_ORDER, dataReturn);
 
       if (tableId) {
         const table = await this.tableRepository.findById(tableId);
         const tableReturn = plainToClass(TableResponseDto, table, {
           excludeExtraneousValues: true,
         });
-        socketResponse.push({
-          event: SocketEventEnum.SEND_TABLE,
-          data: tableReturn,
-        });
+        this.server.emit(SocketEventEnum.SEND_TABLE, tableReturn);
       }
       return from(socketResponse).pipe(map((data) => data));
     } else {
@@ -98,10 +95,7 @@ export class OrderGateway {
       const dataReturn = plainToClass(DetailOrderResponseDto, order, {
         excludeExtraneousValues: true,
       });
-      socketResponse.push({
-        event: SocketEventEnum.SEND_ORDER,
-        data: dataReturn,
-      });
+      this.server.emit(SocketEventEnum.SEND_ORDER, dataReturn);
 
       return from(socketResponse).pipe(map((data) => data));
     } else {
@@ -125,10 +119,7 @@ export class OrderGateway {
       const dataReturn = plainToClass(DetailOrderResponseDto, order, {
         excludeExtraneousValues: true,
       });
-      socketResponse.push({
-        event: SocketEventEnum.SEND_ORDER,
-        data: dataReturn,
-      });
+      this.server.emit(SocketEventEnum.SEND_ORDER, dataReturn);
 
       if (response.data.tableId) {
         const table = await this.tableRepository.findById(
@@ -138,10 +129,7 @@ export class OrderGateway {
           excludeExtraneousValues: true,
         });
 
-        socketResponse.push({
-          event: SocketEventEnum.SEND_TABLE,
-          data: tableReturn,
-        });
+        this.server.emit(SocketEventEnum.SEND_TABLE, tableReturn);
       }
       return from(socketResponse).pipe(map((data) => data));
     } else {
@@ -165,10 +153,7 @@ export class OrderGateway {
       const dataReturn = plainToClass(DetailOrderResponseDto, order, {
         excludeExtraneousValues: true,
       });
-      socketResponse.push({
-        event: SocketEventEnum.SEND_ORDER,
-        data: dataReturn,
-      });
+      this.server.emit(SocketEventEnum.SEND_ORDER, dataReturn);
 
       if (response.data.tableId) {
         const table = await this.tableRepository.findById(
@@ -178,10 +163,7 @@ export class OrderGateway {
           excludeExtraneousValues: true,
         });
 
-        socketResponse.push({
-          event: SocketEventEnum.SEND_TABLE,
-          data: tableReturn,
-        });
+        this.server.emit(SocketEventEnum.SEND_TABLE, tableReturn);
       }
       return from(socketResponse).pipe(map((data) => data));
     } else {
@@ -204,14 +186,11 @@ export class OrderGateway {
     if (SUCCESS_CODE.includes(response.statusCode)) {
       const socketResponse: any[] = [
         {
-          event: SocketEventEnum.SEND_ORDER_DETAIL,
-          data: response.data,
-        },
-        {
           event: SocketEventEnum.NOTIFICATION,
           data: { message: messageByStatus[request.status] },
         },
       ];
+      this.server.emit(SocketEventEnum.SEND_ORDER_DETAIL, response.data);
 
       return from(socketResponse).pipe(map((data) => data));
     } else {
@@ -240,10 +219,7 @@ export class OrderGateway {
       const dataReturn = plainToClass(DetailOrderResponseDto, order, {
         excludeExtraneousValues: true,
       });
-      socketResponse.push({
-        event: SocketEventEnum.SEND_ORDER,
-        data: dataReturn,
-      });
+      this.server.emit(SocketEventEnum.SEND_ORDER, dataReturn);
 
       if (response.data.tableId) {
         const table = await this.tableRepository.findById(
@@ -253,10 +229,7 @@ export class OrderGateway {
           excludeExtraneousValues: true,
         });
 
-        socketResponse.push({
-          event: SocketEventEnum.SEND_TABLE,
-          data: tableReturn,
-        });
+        this.server.emit(SocketEventEnum.SEND_TABLE, tableReturn);
       }
       return from(socketResponse).pipe(map((data) => data));
     } else {

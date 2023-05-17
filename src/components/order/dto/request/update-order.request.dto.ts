@@ -15,6 +15,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ORDER_DETAIL_SCHEMA, ORDER_SCHEMA } from '../../constants/schema';
+import { BaseSocketDto } from './base-socket.dto';
 
 class OrderDetailDto {
   @ApiPropertyOptional({ example: 1 })
@@ -46,7 +47,7 @@ class OrderDetailDto {
   dishId: number;
 }
 
-export class UpdateOrderRequestDto {
+export class UpdateOrderRequestDto extends BaseSocketDto {
   @ApiProperty({ example: 1 })
   @IsInt()
   @IsNotEmpty()
