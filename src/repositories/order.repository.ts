@@ -202,6 +202,7 @@ export class OrderRepository
         startDate: request.startDate,
         endDate: request.endDate,
       })
+      .orderBy('time')
       .andWhere('o.status = :status', { status: OrderStatusEnum.COMPLETED })
       .groupBy('time');
 
@@ -236,6 +237,7 @@ export class OrderRepository
         startDate: request.startDate,
         endDate: request.endDate,
       })
+      .orderBy('time')
       .andWhere('o.status = :status', { status: OrderStatusEnum.COMPLETED })
       .groupBy('time');
 
